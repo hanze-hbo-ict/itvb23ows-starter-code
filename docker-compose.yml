@@ -1,0 +1,21 @@
+services:
+
+    # PHP container
+    app:
+        build: ./app/
+        container_name: php-app
+        ports:
+          - "8000:80"
+
+    # MySQL database service
+    app-db:
+        build: ./database/
+        image: mysql
+        restart: always
+        environment:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: "hive"   
+        ports:
+          - '3306:3306'
+        expose:
+        - '3306'
