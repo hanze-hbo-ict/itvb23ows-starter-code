@@ -11,6 +11,14 @@ function set_state($state) {
     $_SESSION['player'] = $c;
 }
 
-return new mysqli('localhost', 'root', '', 'hive');
+$mysqli = new mysqli('mysql', 'root', 'root', 'hive');
+
+if ($mysqli->connect_error) {
+    die("Connection failed: " . $mysqli->connect_error);
+}
+
+$mysqli->set_charset('utf8mb4');
+
+return $mysqli;
 
 ?>
