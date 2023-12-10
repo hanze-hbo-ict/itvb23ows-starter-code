@@ -1,15 +1,21 @@
 pipeline{
     agent any
-    stages{
-        stage('Test PHP Build'){
-            steps{
-                sh 'php --version'
+    stages {
+	    stage('Build docker container') {
+            steps {
+        	sh 'docker-compose build'
             }
         }
-        stage('SonarQube scan'){
-            steps{
-                sh 'The SonarQube scan stage will be created here'
+
+	    stage('Run docker container') {
+            steps {
+        	sh 'docker-compose up -d'
             }
         }
     }
+
+    post {
+      always {
+          sh 'docker-compose down --remove-orphans'
+      }
 }
