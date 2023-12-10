@@ -19,9 +19,17 @@ services:
           - '3306:3306'
         expose:
         - '3306'
-        
+
     # Jenkins container
     jenkins:
-      image: jenkins/jenkins:lts
+      build: ./jenkins/
+      image: jenkins
       ports:
         - "8080:8080"
+
+    # SonarQube Container
+    sonarqube:
+      
+      image: sonarqube:community
+      ports:
+        - "9000:9000"
