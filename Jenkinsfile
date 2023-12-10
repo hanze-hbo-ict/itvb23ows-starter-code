@@ -1,22 +1,11 @@
 pipeline{
-    agent any
+    agent{
+        docker { image 'php:8.3.0-alpine3.18' } 
+    }
     stages {
-	    stage('Build docker container') {
+	    stage('Checking php version') {
             steps {
-        	sh 'docker-compose build'
+        	sh 'php --version'
             }
         }
-
-	    stage('Run docker container') {
-            steps {
-        	sh 'docker-compose up -d'
-            }
-        }
-    }
-
-    post {
-      always {
-          sh 'docker-compose down --remove-orphans'
-      }
-    }
 }

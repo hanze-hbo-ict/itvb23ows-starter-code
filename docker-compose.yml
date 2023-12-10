@@ -19,6 +19,7 @@ services:
           - '3306:3306'
         expose:
         - '3306'
+        
     # Jenkins container
     jenkins:
       image: jenkins/jenkins:lts
