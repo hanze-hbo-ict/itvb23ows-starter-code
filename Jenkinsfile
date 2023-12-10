@@ -1,10 +1,17 @@
 pipeline{
-    agent any
+    agent {
+        docker {image 'php:8.3-apache'}
+    }
+
     stages{
-        stage('Start container'){
+        stage('Test PHP Build'){
             steps{
-                sh 'docker compose up --build'
-                sh 'docker compose ps'
+                sh 'php --version'
+            }
+        }
+        stage('SonarQube scan'){
+            steps{
+                sh 'The SonarQube scan stage will be created here'
             }
         }
     }
