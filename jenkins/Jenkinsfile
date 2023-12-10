@@ -6,5 +6,16 @@ pipeline{
         	sh 'echo "Test of dit werkt"'
             }
         }
+        
+        stage('SonarQube Analysis'){
+            steps{
+                script{
+                    def scannerHome = tool 'sonarscanner';
+                }
+                withSonarQubeENv('SonarQube Scanner'){
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
+            }
+        }
     }
 }
