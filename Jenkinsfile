@@ -1,8 +1,5 @@
 pipeline{
-    agent {
-        docker {image 'php:8.3-apache'}
-    }
-
+    agent any
     stages{
         stage('Test PHP Build'){
             steps{
