@@ -8,17 +8,25 @@ services:
     depends_on:
       - mysql-db
 
+
   mysql-db:
-    image: mysql:latest
+    image: mysql:5.7
     ports:
       - "3306:3306"
     environment:
        MYSQL_ROOT_PASSWORD: root
        MYSQL_DATABASE: hive
        MYSQL_ALLOW_EMPTY_PASSWORD: Yes
-       MYSQL_PASSWORD: ""
+       MYSQL_PASSWORD: 
     volumes:
       - mysql-data:/var/lib/mysql
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+      - 8080:8080
 
 volumes:
   mysql-data:
