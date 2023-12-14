@@ -1,0 +1,19 @@
+version: '3'
+services:
+  web:
+    build: ./src/
+    container_name: hive-game
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+  db:
+    container_name: hive-db
+    build: ./database/
+    environment:
+      MYSQL_ROOT_PASSWORD: EstaCR7
+      MYSQL_DATABASE: hive
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
