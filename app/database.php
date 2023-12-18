@@ -11,6 +11,14 @@ function set_state($state) {
     $_SESSION['player'] = $c;
 }
 
-return new mysqli('localhost', 'root', '', 'hive');
+$host = 'db';
+$user = 'root';
+$password = 'Incognito153!';
+$db = 'hive';
 
-?>
+$conn = new mysqli('db', $user, $password, $db);
+if($conn->connect_error) {
+    echo 'connection failed' . $conn->connect_error;
+} else {
+    return $conn;
+}
