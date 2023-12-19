@@ -21,12 +21,22 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
+
   jenkins:
     image: jenkins/jenkins:lts
     privileged: true
     user: root
     ports:
       - 8080:8080
+
+
+  sonarqube:
+    image: sonarqube:community
+    depends_on:
+      - mysql-db
+    ports:
+      - "9000:9000"
+  
 
 volumes:
   mysql-data:
