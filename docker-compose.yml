@@ -1,12 +1,13 @@
 version: '3'
 services:
   web:
-    build: ./src/
     container_name: hive-game
+    build: ./src/
     ports:
       - "8000:80"
     depends_on:
       - db
+
   db:
     container_name: hive-db
     build: ./database/
