@@ -9,8 +9,8 @@ pipeline{
         stage('SonarQube analysis'){
             steps{
                 script{
-                def scannerHome = tool 'Default Maven';
-                withSonarQubeEnv('Default Maven'){
+                def scannerHome = tool 'scanner-home';
+                withSonarQubeEnv('scanner-home'){
                     sh"${scannerHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sonarqubetest1 -Dsonar.projectName='sonarqubetest1'"
                 }
                 }
