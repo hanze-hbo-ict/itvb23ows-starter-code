@@ -10,24 +10,19 @@ pipeline{
             steps{
                 def scannerHome = tool 'sonarqube';
                 withSonarQubeEnv('sonarqube'){
-                    sh "${scannerHome}/bin/sonar-scanner \
-                    -D sonar.login=admin \
-                    -D sonar.password=admin \
-                    -D sonar.projectKey=sonarqubetest1 \
-                    -D sonar.exclusions=vendor/**,resources/**,**/*.java \
-                    -D sonar.host.url=http://localhost:9000/"
+                    sh "${scannerHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sonarqubetest1 -Dsonar.projectName='sonarqubetest1'" \
                 }
             }
         }
         stage('Quality Gates'){
             steps{
-         timeout(time: 1, unit: 'HOURS') {
-            def qg = waitForQualityGate() 
+                timeout(time: 1, unit: 'HOURS') {
+                    def qg = waitForQualityGate() 
                 if (qg.status != 'OK') {
                     error "Pipeline aborted due to quality gate failure: ${qg.status}"
                     }
                 }
              }
-            }
+        }
     }   
 }
