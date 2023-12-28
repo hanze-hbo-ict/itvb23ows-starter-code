@@ -1,4 +1,5 @@
 pipeline{
+    node{
     stage('Clone the repo'){
         git 'https://github.com/berendkorendijk/itvb23ows-starter-code'
     }
@@ -21,5 +22,6 @@ pipeline{
                     error "Pipeline aborted due to quality gate failure: ${qg.status}"
                 }
             }
+    }
     }
 }
