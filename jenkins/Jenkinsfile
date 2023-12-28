@@ -11,7 +11,7 @@ pipeline{
                 script{
                 def scannerHome = tool 'scanner-home';
                 withSonarQubeEnv('scanner-home'){
-                    sh"${scannerHome}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sonarqubetest1 -Dsonar.projectName='sonarqubetest1'"
+                    sh"${scannerHome}/bin/scanner-home clean verify sonar:sonar -Dsonar.projectKey=sonarqubetest1 -Dsonar.projectName='sonarqubetest1'"
                 }
                 }
             }
