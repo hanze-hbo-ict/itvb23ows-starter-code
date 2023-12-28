@@ -1,37 +1,25 @@
 pipeline{
-    agent any
-    stages {
-	    stage('Checking php version') {
-            steps {
-        	sh 'echo "Test of dit werkt"'
-            }
+    stage('Clone the repo'){
+        git 'https://github.com/berendkorendijk/itvb23ows-starter-code'
+    }
+    stage('SonarQube analysis'){
+        def scannerHome = tool 'sonarqube';
+        withSonarQubeEnv('sonarqube'){
+            sh "${scannerHome}/bin/sonar-scanner \
+            -D sonar.login=admin \
+            -D sonar.password=admin \
+            -D sonar.projectKey=sonarqubetest1 \
+            -D sonar.exclusions=vendor/**,resources/**,**/*.java \
+            -D sonar.host.url=http://localhost:9000/"
         }
-        
-        stage('SonarQube Analysis'){
-            steps{
-                script{
-                    def scannerHome = tool 'SonarQube Scanner 2.16.1';
-                }
-                withSonarQubeENv('SonarQube'){
-                    sh "${scannerHome}/bin/sonar-scanner"
-                }
-            }
-        }
-         stage("SonarQube Quality Gate Check") {
-            steps {
-                script {
-                def qualityGate = waitForQualityGate()
-                    
-                    if (qualityGate.status != 'OK') {
-                        echo "${qualityGate.status}"
-                        error "Quality Gate failed: ${qualityGateStatus}"
-                    }
-                    else {
-                        echo "${qualityGate.status}"
-                        echo "SonarQube Quality Gates Passed"
-                    }
+        sh "${mvn}/bin/mvn clean verify sonar:sonar -Dsonar.projectKey=sonarqubetest1 -Dsonar.projectName='sonarqubetest1'"
+    }
+    stage('Quality Gates'){
+         timeout(time: 1, unit: 'HOURS') {
+            def qg = waitForQualityGate() 
+                if (qg.status != 'OK') {
+                    error "Pipeline aborted due to quality gate failure: ${qg.status}"
                 }
             }
-        }
     }
 }
