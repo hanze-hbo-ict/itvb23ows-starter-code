@@ -9,7 +9,7 @@ pipeline {
         stage('SonarQube') {
             steps {
                 script { scannerHome = tool 'HiveGame SonarQube Scanner' }
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('HiveGame SonarQube Scanner') {
                     sh """
                         ${scannerHome}/bin/sonar-scanner \
                         -Dsonar.projectKey=[sqp_132328b422cede3931d1e3a7d655dbe572bc0034]
