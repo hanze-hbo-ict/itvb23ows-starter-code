@@ -10,8 +10,10 @@ pipeline {
             steps {
                 script { scannerHome = tool 'SonarQube Scanner' }
                 withSonarQubeEnv('SonarQube') {
-                    sh "${scannerHome}/bin/sonar-scanner
-                        -Dsonar.projectKey=[sqp_132328b422cede3931d1e3a7d655dbe572bc0034]"
+                    sh """
+                        ${scannerHome}/bin/sonar-scanner \
+                        -Dsonar.projectKey=[sqp_132328b422cede3931d1e3a7d655dbe572bc0034]
+                    """
                 }
             }
         }
