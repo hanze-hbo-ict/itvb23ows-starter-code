@@ -8,7 +8,7 @@ pipeline {
         }
         stage('SonarQube') {
             steps {
-                script { scannerHome = tool 'HiveGame SonarQube Scanner' }
+                script { scannerHome = tool 'SonarQube Scanner' }
                 withSonarQubeEnv('HiveGame SonarQube Scanner') {
                     sh """
                         ${scannerHome}/bin/sonar-scanner \
