@@ -20,7 +20,6 @@ services:
     restart: always
     volumes:
       - /var/lib/mysql
-#      - ./db:/db
     environment:
       MYSQL_DATABASE: 'hive'
       MYSQL_ROOT_USER: 'root'
@@ -28,3 +27,10 @@ services:
     ports:
       # <Port exposed> : <MySQL Port running inside container>
       - '9906:3306'
+#  jenkins:
+#    container_name: jenkins_container
+#    image: jenkins/jenkins:latest
+#    volumes:
+#      - /var/jenkins_home
+#    ports:
+#      - "8081:81"

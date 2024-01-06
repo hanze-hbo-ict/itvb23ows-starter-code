@@ -22,9 +22,9 @@
     if (!count($to)) $to[] = '0,0';
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en_US">
     <head>
-        <title>Hive</title>
+        <title>Hive || OWS</title>
         <style>
             div.board {
                 width: 60%;
