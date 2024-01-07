@@ -1,5 +1,5 @@
 pipeline {
-    agent {
+    agent { label "!windows"
         docker { image 'php:8.2-apache' }
     }
 
@@ -9,6 +9,14 @@ pipeline {
                 echo "Building application.."
                 echo "Build ID is ${BUILD_ID}"
                 sh "php --version"
+            }
+        }
+        stage("SonarQube") {
+            steps {
+                script { scannerHome = tool 'SonarQube Scanner'}
+                withSonarQubeEnv('SonarQube') {
+                    sh "${scannerHome}"/bin/sonar-scanner -Dsonar.projectKey=hive"
+                }
             }
         }
         stage("Test") {
