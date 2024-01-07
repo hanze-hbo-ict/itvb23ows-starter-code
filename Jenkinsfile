@@ -1,5 +1,5 @@
 pipeline {
-    agent { label "!windows"
+    agent {
         docker { image 'php:8.2-apache' }
     }
 
