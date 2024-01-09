@@ -13,6 +13,7 @@ pipeline {
         }
         stage("SonarQube") {
             steps {
+                echo "Start Sonar Scanner.."
                 script { scannerHome = tool 'SonarQube Scanner'}
                 withSonarQubeEnv('SonarQube') {
                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=hive"
