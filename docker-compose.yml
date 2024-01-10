@@ -46,6 +46,7 @@ services:
 
 networks:
   jenkins:
+    driver: bridge
 
 volumes:
   sonarqube_data:
