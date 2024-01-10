@@ -6,17 +6,11 @@ pipeline{
                 checkout scm
             }
         }
-        stage('SonarQube analysis'){
-            steps{
-                script{
-                def scannerHome = tool 'scanner-home';
-                withSonarQubeEnv('scanner-home'){
-                    sh"${scannerHome}/bin/scanner-home \
-                    -D sonar.projectKey=sonarqubetest1 \
-                    -D sonar.projectName='sonarqubetest1' \
-                    -D sonar.exclusions=vendor/**,resources/**,**/*.java \
-                    -D sonar.host.url=http://localhost:9000/"
-                }
+        stage('SonarQube') {
+            steps {
+                script { scannerHome = tool 'SonarQube Scanner' }
+                withSonarQubeEnv('SonarQube') {
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=sonarqubetes1"
                 }
             }
         }
