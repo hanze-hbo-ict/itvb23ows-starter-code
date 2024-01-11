@@ -11,6 +11,7 @@ function set_state($state) {
     $_SESSION['player'] = $c;
 }
 
-return new mysqli('172.17.0.2', 'root', '', 'hive');
+//return new mysqli('172.17.0.2', 'root', '', 'hive');
+return new mysqli('mysql', 'root', '', 'hive');
 
 ?>
