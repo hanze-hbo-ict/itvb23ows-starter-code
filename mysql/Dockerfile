@@ -1,0 +1,8 @@
+FROM mysql
+
+ENV MYSQL_ALLOW_EMPTY_PASSWORD=1
+ENV MYSQL_DATABASE hive
+ENV MYSQL_ROOT_HOST %
+ADD hive.sql /docker-entrypoint-initdb.d
+
+EXPOSE 3306

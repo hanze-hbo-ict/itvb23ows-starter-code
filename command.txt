@@ -1,0 +1,5 @@
+docker run --name=mysql --publish 3306:3306 maaike/mysql
+docker run -p 8000:8000 maaike/ows
+
+docker exec -it {containername} bash
+
