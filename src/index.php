@@ -1,7 +1,7 @@
 <?php
     session_start();
 
-    include_once 'util.php';
+    include_once 'utils/util.php';
 
     if (!isset($_SESSION['board'])) {
         header('Location: restart.php');
@@ -167,7 +167,7 @@
         <strong><?php if (isset($_SESSION['error'])) echo($_SESSION['error']); unset($_SESSION['error']); ?></strong>
         <ol>
             <?php
-                $db = include 'database.php';
+                $db = include 'database/database.php';
                 $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
