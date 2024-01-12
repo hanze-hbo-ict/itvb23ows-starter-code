@@ -7,15 +7,13 @@ pipeline {
             }
         }
         stage('SonarQube') {
-            steps {
-                script { scannerHome = tool 'SonarQube Scanner' }
-                withSonarQubeEnv('HiveGame SonarQube Scanner') {
-                    sh """
-                        ${scannerHome}/bin/sonar-scanner \
-                        -Dsonar.projectKey=[HiveGame]
-                    """
-                }
-            }
+             steps {
+                 script { scannerHome = tool 'HiveGame SonarQube Scanner' }
+                 withSonarQubeEnv('HiveGame SonarQube Scanner') {
+                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=HiveGame"
+                 }
+             }
         }
+
     }
 }
