@@ -8,7 +8,7 @@ $_SESSION['player'] = 0;
 
 //$db = include_once 'database.php';
 //$db->prepare('INSERT INTO games VALUES ()')->execute();
-include "src/queries.php";
+include "queries.php";
 $lastMove = restart();
 $_SESSION['game_id'] = $lastMove;
 
