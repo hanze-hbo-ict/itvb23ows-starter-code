@@ -11,7 +11,7 @@ pipeline {
             steps{
                 script {scannerHome = tool 'SonarQube'}
                 withSonarQubeEnv('SonarQube'){
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=[key]"
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=Thomas-OWS"
                 }
             }
         }
