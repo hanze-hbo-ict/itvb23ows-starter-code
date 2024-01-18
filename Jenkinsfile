@@ -14,12 +14,17 @@ pipeline {
             }
         }
 
-        stage("build") {
+        stage('prune docker data') {
+            steps {
+                sh 'docker system prune -a --volumes -f'
+            }
+        }
+
+        stage("start container") {
 
             steps {
-                sh 'echo "building"'
-                sh 'docker compose build'
-                sh 'docker compose up'
+                sh 'docker compose up -d --wait'
+                sh 'docker compose ps'
             }
 
         }
@@ -42,6 +47,8 @@ pipeline {
     }
     post {
         always {
+            sh 'docker compose down --remove-orphans -v'
+            sh 'docker compose ps'
             deleteDir()
         }
     }
