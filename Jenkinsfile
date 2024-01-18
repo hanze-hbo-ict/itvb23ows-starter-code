@@ -8,6 +8,7 @@ pipeline {
 
             steps {
                 sh 'echo "building"'
+                sh 'docker-compose build'
             }
 
         }
@@ -24,7 +25,6 @@ pipeline {
 
             steps {
                 sh 'echo "deploying"'
-                sh 'docker compose'
             }
 
         }
