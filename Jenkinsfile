@@ -7,7 +7,7 @@ pipeline {
         stage("build") {
 
             steps {
-                echo 'building'
+                sh 'echo "building"'
             }
 
         }
@@ -15,7 +15,7 @@ pipeline {
         stage("test") {
 
             steps {
-                echo 'testing'
+                sh 'echo "testing"'
             }
 
         }
@@ -23,9 +23,15 @@ pipeline {
         stage("deploy") {
 
             steps {
-                echo 'deploying'
+                sh 'echo "deploying"'
+                sh 'docker compose'
             }
 
+        }
+    }
+    post {
+        always {
+            deleteDir()
         }
     }
 }
