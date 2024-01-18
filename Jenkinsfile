@@ -1,7 +1,7 @@
 pipeline {
 
     agent {
-        docker {image 'php:8.3.1-alpine3.19'}
+        any
     }
 
     stages {
@@ -10,7 +10,8 @@ pipeline {
 
             steps {
                 sh 'echo "building"'
-                sh 'php --version'
+                sh 'docker-compose build'
+                sh 'docker-compose up'
             }
 
         }
