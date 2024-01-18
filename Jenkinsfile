@@ -8,7 +8,7 @@ pipeline {
 
             steps {
                 sh 'echo "building"'
-                sh 'docker-compose build'
+                sh 'composer install'
             }
 
         }
