@@ -35,7 +35,7 @@ pipeline {
             steps {
                 script { scannerHome = tool 'SonarQube Scanner OWS'}
                 withSonarQubeEnv('ows_sonarqube') {
-                    sh "${scannerHome}/bin/sonar-scanner --Dsonar.projectKey=ows"
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=ows"
                 }
             }
 
