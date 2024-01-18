@@ -10,7 +10,6 @@ pipeline {
                 docker info
                 docker version
                 docker compose version
-                curl --version
                 '''
             }
         }
@@ -19,8 +18,8 @@ pipeline {
 
             steps {
                 sh 'echo "building"'
-                sh 'docker-compose build'
-                sh 'docker-compose up'
+                sh 'docker compose build'
+                sh 'docker compose up'
             }
 
         }
