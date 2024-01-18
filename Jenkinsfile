@@ -14,11 +14,11 @@ pipeline {
             }
         }
 
-        stage('prune docker data') {
-            steps {
-                sh 'docker system prune -a --volumes -f'
-            }
-        }
+//         stage('prune docker data') {
+//             steps {
+//                 sh 'docker system prune -a --volumes -f'
+//             }
+//         }
 
         stage("start container") {
 
@@ -34,7 +34,7 @@ pipeline {
 
             steps {
                 script { scannerHome = tool 'SonarQube Scanner OWS'}
-                withSonarQubeEnv('SonarQube') {
+                withSonarQubeEnv('ows_sonarqube') {
                     sh "${scannerHome}/bin/sonar-scanner --Dsonar.projectKey=ows"
                 }
             }
