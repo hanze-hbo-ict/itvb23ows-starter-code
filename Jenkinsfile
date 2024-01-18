@@ -23,8 +23,9 @@ pipeline {
         stage("start container") {
 
             steps {
-                sh 'docker compose up -d --wait'
-                sh 'docker compose ps'
+                   sh 'echo "building container"'
+//                 sh 'docker compose up -d --wait'
+//                 sh 'docker compose ps'
             }
 
         }
