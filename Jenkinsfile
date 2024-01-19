@@ -7,27 +7,10 @@ pipeline {
         stage("verify tooling") {
             steps {
             sh '''
-                docker info
                 docker version
                 docker compose version
                 '''
             }
-        }
-
-//         stage('prune docker data') {
-//             steps {
-//                 sh 'docker system prune -a --volumes -f'
-//             }
-//         }
-
-        stage("start container") {
-
-            steps {
-                   sh 'echo "building container"'
-//                 sh 'docker compose up -d --wait'
-//                 sh 'docker compose ps'
-            }
-
         }
 
         stage("SonarQube") {
@@ -37,6 +20,16 @@ pipeline {
                 withSonarQubeEnv('ows_sonarqube') {
                     sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=ows"
                 }
+            }
+
+        }
+
+        stage("start container") {
+
+            steps {
+                sh 'echo "building container"'
+                sh 'docker compose up -d --wait'
+                sh 'docker compose ps'
             }
 
         }
