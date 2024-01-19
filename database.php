@@ -1,4 +1,4 @@
-<?php
+<?php namespace database;
 
 function getState(): string
 {
@@ -13,4 +13,7 @@ function setState($state): void
     $_SESSION['player'] = $c;
 }
 
-return new mysqli('mysql', 'root', '', 'hive');
+function getDatabase(): mysqli
+{
+    return new mysqli('mysql', 'root', '', 'hive');
+}
