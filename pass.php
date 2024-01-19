@@ -5,8 +5,8 @@ use database;
 session_start();
 
 $db = database\getDatabase();
-$stmt = $db->prepare('insert into moves 
-    (game_id, type, move_from, move_to, previous_id, state) 
+$stmt = $db->prepare('insert into moves
+    (game_id, type, move_from, move_to, previous_id, state)
     values (?, "pass", null, null, ?, ?)');
 $stmt->bind_param('iis', $_SESSION['game_id'], $_SESSION['last_move'], database\getState());
 $stmt->execute();

@@ -6,11 +6,10 @@ function isNeighbour($a, $b): bool
 {
     $a = explode(',', $a);
     $b = explode(',', $b);
-    return (
-        ($a[0] == $b[0] && abs($a[1] - $b[1]) == 1) or
-        ($a[1] == $b[1] && abs($a[0] - $b[0]) == 1) or
-        ($a[0] + $a[1] == $b[0] + $b[1])
-    );
+    return
+        ($a[0] == $b[0] && abs($a[1] - $b[1]) == 1) ||
+        ($a[1] == $b[1] && abs($a[0] - $b[0]) == 1) ||
+        ($a[0] + $a[1] == $b[0] + $b[1]);
 }
 
 function hasNeighbour($a, $board): bool
@@ -44,7 +43,7 @@ function len($tile): int
 
 function slide($board, $from, $to): bool
 {
-    if ((!hasNeighbour($to, $board)) or (!isNeighbour($from, $to))){
+    if ((!hasNeighbour($to, $board)) || (!isNeighbour($from, $to))){
         return false;
     }
 

@@ -71,8 +71,8 @@ else {
         }
         $_SESSION['player'] = 1 - $_SESSION['player'];
         $db = database\getDatabase();
-        $stmt = $db->prepare('insert into moves 
-            (game_id, type, move_from, move_to, previous_id, state) 
+        $stmt = $db->prepare('insert into moves
+            (game_id, type, move_from, move_to, previous_id, state)
             values (?, "move", ?, ?, ?, ?)');
         $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], database\getState());
         $stmt->execute();
