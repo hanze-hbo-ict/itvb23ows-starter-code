@@ -44,12 +44,10 @@ function len($tile): int
 
 function slide($board, $from, $to): bool
 {
-    if (!hasNeighbour($to, $board)) {
+    if ((!hasNeighbour($to, $board)) or (!isNeighbour($from, $to))){
         return false;
     }
-    if (!isNeighbour($from, $to)) {
-        return false;
-    }
+
     $b = explode(',', $to);
     $common = [];
     foreach ($GLOBALS['OFFSETS'] as $pq) {
