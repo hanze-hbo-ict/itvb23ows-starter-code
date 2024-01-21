@@ -15,6 +15,7 @@ class UndoController
 
     public function undoMove()
     {
+        unset($_SESSION['error']);
         $result = $this->database->undo($_SESSION['last_move']);
         $this->database->deleteMove($_SESSION['last_move']);
         $_SESSION['last_move'] = $result[5];

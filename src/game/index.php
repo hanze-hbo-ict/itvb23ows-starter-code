@@ -165,7 +165,7 @@
             <input type="submit" name="restart" value="Restart">
         </form>
         <strong>
-            <?php if (isset($_SESSION['error'])) echo($_SESSION['error']); unset($_SESSION['error']); ?>
+            <?php if (isset($_SESSION['error'])) echo($_SESSION['error']);?>
         </strong>
         <ol>
             <?php

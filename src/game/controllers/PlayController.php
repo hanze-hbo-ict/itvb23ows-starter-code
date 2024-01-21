@@ -27,6 +27,7 @@ class PlayController
 
     public function executePlay()
     {
+        unset($_SESSION['error']);
         $thisBoard = $this->board->getBoard();
         if (!$this->hand[$this->piece]) {
             $_SESSION['error'] = "Player does not have tile";
