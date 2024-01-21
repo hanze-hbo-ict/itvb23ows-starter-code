@@ -87,6 +87,7 @@ class MoveController
                 }
 
                 $_SESSION['player'] = 1 - $_SESSION['player'];
+                unset($thisBoard[$this->from]);
                 $lastMove = $this->database->move($_SESSION['game_id'], $this->from, $this->to, $_SESSION['last_move']);
                 $_SESSION['last_move'] = $lastMove;
             }

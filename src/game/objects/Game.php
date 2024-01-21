@@ -44,7 +44,6 @@ class Game {
         $this->player = $player;
     }
 
-
 }
 
 ?>

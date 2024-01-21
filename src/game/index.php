@@ -36,9 +36,11 @@
 
     // Handle 'Undo' button press
     if(array_key_exists('undo', $_POST)) {
-        $undoController = new undoController($database);
-        $undoController->undoMove();
-        $game->getPlayer()->switchPlayer();
+        if (count($game->getBoard()->getBoard()) != 0){
+            $undoController = new undoController($database);
+            $undoController->undoMove();
+            $game->getPlayer()->switchPlayer();
+        }
 
         header('Location: ./index.php');
     }
@@ -144,7 +146,7 @@
         <form method="post">
             <select name="from">
                 <?php
-                    foreach (array_keys($game->getBoard()->getBoard()) as $pos) {
+                    foreach ($game->getPlayer()->getPlayerPieces($game->getBoard()->getBoard()) as $pos) {
                         echo "<option value=\"$pos\">$pos</option>";
                     }
                 ?>
