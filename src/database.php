@@ -12,5 +12,3 @@ function setState($state) {
 }
 
 return new mysqli('localhost', 'root', 'password', 'hive');
-
-?>
