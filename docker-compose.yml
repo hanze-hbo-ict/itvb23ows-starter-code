@@ -2,7 +2,7 @@ version: '3'
 
 services:
   php-app:
-    build: .
+    build: ./src
     ports:
       - "8000:80"
     depends_on:
