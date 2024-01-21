@@ -17,7 +17,7 @@ services:
        MYSQL_ROOT_PASSWORD: root
        MYSQL_DATABASE: hive
        MYSQL_ALLOW_EMPTY_PASSWORD: Yes
-       MYSQL_PASSWORD: 
+       MYSQL_PASSWORD: password 
     volumes:
       - mysql-data:/var/lib/mysql
 
