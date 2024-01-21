@@ -5,5 +5,4 @@ FROM php:7.4-apache
 RUN docker-php-ext-install mysqli
 
 # Copy the application files into the container
-COPY . /var/www/html/
-
+COPY ./game/ .
