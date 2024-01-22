@@ -1,20 +1,35 @@
 <?php
+    require_once(__DIR__ . "/src/database/Database.php");
+    require_once(__DIR__ . "/src/Game.php");
+    use app\database\Database;
+    use app\Game;
+
+    //todo deze file herschrijven met gebruik van classes
 
     session_start();
 
-    if (!isset($_SESSION['board'])) {
-        header('Location: src/restart.php');
-        exit(0);
-    }
-    $board = $_SESSION['board'];
-    $player = $_SESSION['player'];
-    $hand = $_SESSION['hand'];
+    //todo dit ergens anders? wat is dit uberhaupt? komt uit util
+    $GLOBALS['OFFSETS'] = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
 
+    if (!isset($_SESSION['game'])) {
+            $db = new Database();
+            $game = new Game($db);
+        } else {
+            $db = $_SESSION['db'];
+            $game = $_SESSION['game'];
+        }
+
+    $board = $game->getBoard();
+    $player = $game->getPlayersTurn();
+    $hand = $game->getHand();
+
+    //todo dit proberen te snappen en eventueel aanpassen ?????
     $to = [];
-    foreach ($GLOBALS['OFFSETS'] as $pq) {
+    foreach ($GLOBALS['OFFSETS'] as $offset) {
         foreach (array_keys($board) as $pos) {
+            //todo pq2 is hier een string, aanpassen
             $pq2 = explode(',', $pos);
-            $to[] = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);
+            $to[] = ($offset[0] + $pq2[0]).','.($offset[1] + $pq2[1]);
         }
     }
     $to = array_unique($to);
@@ -77,6 +92,7 @@
     <body>
         <div class="board">
             <?php
+            //todo dit proberen te snappen
                 $min_p = 1000;
                 $min_q = 1000;
                 foreach ($board as $pos => $tile) {
@@ -111,6 +127,7 @@
         <div class="hand">
             White:
             <?php
+            //todo Hand class die dit kan printen?
                 foreach ($hand[0] as $tile => $ct) {
                     for ($i = 0; $i < $ct; $i++) {
                         echo '<div class="tile player0"><span>'.$tile."</span></div> ";
@@ -173,7 +190,7 @@
         <form method="post" action="src/pass.php">
             <input type="submit" value="Pass">
         </form>
-        <form method="post" action="src/restart.php">
+        <form method="post" action=<?php $game->restart()?>>
             <input type="submit" value="Restart">
         </form>
         <strong>
@@ -184,10 +201,6 @@
         </strong>
         <ol>
             <?php
-                require_once(__DIR__ . "/src/database/database.php");
-                use app\database\Database;
-
-                $db = new Database();
                 $stmt = $db->getDatabase()->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();

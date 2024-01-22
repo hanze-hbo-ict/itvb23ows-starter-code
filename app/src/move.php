@@ -1,6 +1,6 @@
 <?php namespace app;
 
-require_once(__DIR__ . "/database/database.php");
+require_once(__DIR__ . "/database/Database.php");
 require_once('util.php');
 use app\database\Database;
 

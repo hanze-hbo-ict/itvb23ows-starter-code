@@ -1,6 +1,6 @@
 <?php namespace app;
 
-require_once(__DIR__ . "/database/database.php");
+require_once(__DIR__ . "/database/Database.php");
 use app\database\Database;
 
 session_start();
