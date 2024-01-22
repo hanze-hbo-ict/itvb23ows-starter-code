@@ -12,12 +12,15 @@ $board = $_SESSION['board'];
 $hand = $_SESSION['hand'][$player];
 unset($_SESSION['error']);
 
-if (!isset($board[$from]))
+if (!isset($board[$from])) {
     $_SESSION['error'] = 'Board position is empty';
-elseif (!playerOwnsTile($board, $player, $from))
+}
+elseif (!playerOwnsTile($board, $player, $from)) {
     $_SESSION['error'] = "Tile is not owned by player";
-elseif ($hand['Q'])
+}
+elseif ($hand['Q']) {
     $_SESSION['error'] = "Queen bee is not played";
+}
 else {
     $tile = array_pop($board[$from]);
     if (!hasNeighbour($to, $board))
@@ -49,10 +52,15 @@ else {
         }
     }
     if (isset($_SESSION['error'])) {
-        if (isset($board[$from])) array_push($board[$from], $tile);
-        else $board[$from] = [$tile];
+        $board[$from] = [$tile];
+//        if (isset($board[$from])) {
+//            $board[$from][] = $tile;
+//        }
+//        else
     } else {
-        if (isset($board[$to])) array_push($board[$to], $tile);
+        if (isset($board[$to])) {
+            $board[$to][] = $tile;
+        }
         else $board[$to] = [$tile];
         $_SESSION['player'] = 1 - $_SESSION['player'];
         $db = include 'database.php';
