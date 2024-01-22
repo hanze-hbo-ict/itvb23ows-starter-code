@@ -1,6 +1,7 @@
-<?php namespace restart;
+<?php namespace app;
 
-use database;
+require_once(__DIR__ . "/database/database.php");
+use app\database\Database;
 
 session_start();
 
@@ -11,8 +12,8 @@ $_SESSION['hand'] = [
 ];
 $_SESSION['player'] = 0;
 
-$db = database\getDatabase();
-$db->prepare('INSERT INTO games VALUES ()')->execute();
-$_SESSION['game_id'] = $db->insert_id;
+$db = new Database();
+$db->getDatabase()->prepare('INSERT INTO games VALUES ()')->execute();
+$_SESSION['game_id'] = $db->getDatabase()->insert_id;
 
 header('Location: index.php');

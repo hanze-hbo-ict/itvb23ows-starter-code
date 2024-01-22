@@ -1,7 +1,8 @@
-<?php namespace play;
+<?php namespace app;
 
-use util;
-use database;
+require_once(__DIR__ . "/database/database.php");
+require_once(__DIR__ . "/util.php");
+use app\database\Database;
 
 session_start();
 
@@ -16,9 +17,9 @@ if (!$hand[$piece]) {
     $_SESSION['error'] = "Player does not have tile";
 } elseif (isset($board[$to])) {
     $_SESSION['error'] = 'Board position is not empty';
-} elseif (count($board) && !util\hasNeighbour($to, $board)) {
+} elseif (count($board) && !hasNeighbour($to, $board)) {
     $_SESSION['error'] = "board position has no neighbour";
-} elseif (array_sum($hand) < 11 && !util\neighboursAreSameColor($player, $to, $board)) {
+} elseif (array_sum($hand) < 11 && !neighboursAreSameColor($player, $to, $board)) {
     $_SESSION['error'] = "Board position has opposing neighbour";
 } elseif (array_sum($hand) <= 8 && $hand['Q']) {
     $_SESSION['error'] = 'Must play queen bee';
@@ -26,13 +27,14 @@ if (!$hand[$piece]) {
     $_SESSION['board'][$to] = [[$_SESSION['player'], $piece]];
     $_SESSION['hand'][$player][$piece]--;
     $_SESSION['player'] = 1 - $_SESSION['player'];
-    $db = database\getDatabase();
-    $stmt = $db->prepare('insert into moves
+    $db = new Database();
+    $stmt = $db->getDatabase()->prepare('insert into moves
         (game_id, type, move_from, move_to, previous_id, state)
         values (?, "play", ?, ?, ?, ?)');
-    $stmt->bind_param('issis', $_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], database\getState());
+    $state = $db->getState();
+    $stmt->bind_param('issis', $_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], $state);
     $stmt->execute();
-    $_SESSION['last_move'] = $db->insert_id;
+    $_SESSION['last_move'] = $db->getDatabase()->insert_id;
 }
 
 header('Location: index.php');

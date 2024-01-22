@@ -1,11 +1,9 @@
-<?php namespace index;
-
-    use database;
+<?php
 
     session_start();
 
     if (!isset($_SESSION['board'])) {
-        header('Location: restart.php');
+        header('Location: src/restart.php');
         exit(0);
     }
     $board = $_SESSION['board'];
@@ -138,7 +136,7 @@
                 echo "Black";
             } ?>
         </div>
-        <form method="post" action="play.php">
+        <form method="post" action="src/play.php">
             <select name="piece">
                 <?php
                     foreach ($hand[$player] as $tile => $ct) {
@@ -155,7 +153,7 @@
             </select>
             <input type="submit" value="Play">
         </form>
-        <form method="post" action="move.php">
+        <form method="post" action="src/move.php">
             <select name="from">
                 <?php
                     foreach (array_keys($board) as $pos) {
@@ -172,10 +170,10 @@
             </select>
             <input type="submit" value="Move">
         </form>
-        <form method="post" action="pass.php">
+        <form method="post" action="src/pass.php">
             <input type="submit" value="Pass">
         </form>
-        <form method="post" action="restart.php">
+        <form method="post" action="src/restart.php">
             <input type="submit" value="Restart">
         </form>
         <strong>
@@ -186,8 +184,11 @@
         </strong>
         <ol>
             <?php
-                $db = database\getDatabase();
-                $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
+                require_once(__DIR__ . "/src/database/database.php");
+                use app\database\Database;
+
+                $db = new Database();
+                $stmt = $db->getDatabase()->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 while ($row = $result->fetch_array()) {
@@ -195,7 +196,7 @@
                 }
             ?>
         </ol>
-        <form method="post" action="undo.php">
+        <form method="post" action="src/undo.php">
             <input type="submit" value="Undo">
         </form>
     </body>
