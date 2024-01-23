@@ -53,16 +53,16 @@ else {
     }
     if (isset($_SESSION['error'])) {
         $board[$from] = [$tile];
-//        if (isset($board[$from])) {
-//            $board[$from][] = $tile;
-//        }
-//        else
     } else {
         if (isset($board[$to])) {
             $board[$to][] = $tile;
         }
-        else $board[$to] = [$tile];
-        $_SESSION['player'] = 1 - $_SESSION['player'];
+        else {
+            $board[$to] = [$tile];
+        }
+        if ($hand['Q'] !== 0) {
+            $_SESSION['player'] = 1 - $_SESSION['player'];
+        }
         $db = include 'database.php';
         $stmt = $db->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state) values (?, "move", ?, ?, ?, ?)');
         $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], getState());
