@@ -9,7 +9,7 @@ use app\database\Database;
 class Game
 {
     private Board $board;
-    private int $playersTurn;
+    private Player $playerAtTurn;
     private Player $playerOne;
     private Player $playerTwo;
 
@@ -31,14 +31,14 @@ class Game
         $this->board = $board;
     }
 
-    public function getPlayersTurn(): int
+    public function getPlayerAtTurn(): Player
     {
-        return $this->playersTurn;
+        return $this->playerAtTurn;
     }
 
-    public function setPlayersTurn($playersTurn): void
+    public function setPlayerAtTurn($playerAtTurn): void
     {
-        $this->playersTurn = $playersTurn;
+        $this->playerAtTurn = $playerAtTurn;
     }
 
     public function getPlayerOne(): Player
@@ -53,9 +53,13 @@ class Game
 
     public function restart(): void {
         $this->board = new Board();
-        $this->playerOne = new Player();
-        $this->playerTwo = new Player();
-        $this->playersTurn = 0;
+        $this->playerOne = new Player(0);
+        $this->playerTwo = new Player(1);
+        $this->playerAtTurn = $this->playerOne;
+    }
+
+    public function undoLastMove() {
+        //todo
     }
 
     public function addToDatabase(Database $database): void {

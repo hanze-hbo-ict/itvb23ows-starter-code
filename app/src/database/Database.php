@@ -14,6 +14,7 @@ class Database {
         return $this->database;
     }
 
+    //todo dit ergens anders, want dit hoort niet bij db
     function getState(): string
     {
         return serialize([$_SESSION['hand'], $_SESSION['board'], $_SESSION['player']]);
@@ -26,6 +27,8 @@ class Database {
         $_SESSION['board'] = $b;
         $_SESSION['player'] = $c;
     }
+
+    //todo alle functies die de db gebruiken hier?
 
     private function initDatabase(): mysqli
     {

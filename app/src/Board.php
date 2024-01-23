@@ -6,6 +6,17 @@ class Board
 {
     // Board bestaat alleen uit pieces, niet uit beschikbare plekken
     private array $board = [];
+
+    public function getBoard(): array
+    {
+        return $this->board;
+    }
+
+    public function setBoard(array $board): void
+    {
+        $this->board = $board;
+    }
+
     //todo logica van util
 
     function pieceHasNeighbour($pieceOne): bool

@@ -5,6 +5,7 @@
     use app\Game;
 
     //todo deze file herschrijven met gebruik van classes
+    //todo eventueel post actions op een andere manier?
 
     session_start();
 
@@ -12,21 +13,22 @@
     $GLOBALS['OFFSETS'] = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
 
     if (!isset($_SESSION['game'])) {
-            $db = new Database();
-            $game = new Game($db);
-        } else {
-            $db = $_SESSION['db'];
-            $game = $_SESSION['game'];
-        }
+        $db = new Database();
+        $game = new Game($db);
+    } else {
+        $db = $_SESSION['db'];
+        $game = $_SESSION['game'];
+    }
 
     $board = $game->getBoard();
-    $player = $game->getPlayersTurn();
-    $hand = $game->getHand();
+    $playerAtTurn = $game->getPlayerAtTurn();
+    $playerOne = $game->getPlayerOne();
+    $playerTwo = $game->getPlayerTwo();
 
-    //todo dit proberen te snappen en eventueel aanpassen ?????
+    //todo dit proberen te snappen en eventueel aanpassen ????? Zijn dit de mogelijke play posities oid?
     $to = [];
     foreach ($GLOBALS['OFFSETS'] as $offset) {
-        foreach (array_keys($board) as $pos) {
+        foreach (array_keys($board->getBoard()) as $pos) {
             //todo pq2 is hier een string, aanpassen
             $pq2 = explode(',', $pos);
             $to[] = ($offset[0] + $pq2[0]).','.($offset[1] + $pq2[1]);
@@ -104,7 +106,7 @@
                         $min_q = $pq[1];
                     }
                 }
-                foreach (array_filter($board) as $pos => $tile) {
+                foreach (array_filter($board->getBoard()) as $pos => $tile) {
                     $pq = explode(',', $pos);
                     $pq[0];
                     $pq[1];
@@ -127,8 +129,8 @@
         <div class="hand">
             White:
             <?php
-            //todo Hand class die dit kan printen?
-                foreach ($hand[0] as $tile => $ct) {
+            //todo functie die dit kan printen? (want herhaling)
+                foreach ($playerOne->getHand() as $tile => $ct) {
                     for ($i = 0; $i < $ct; $i++) {
                         echo '<div class="tile player0"><span>'.$tile."</span></div> ";
                     }
@@ -138,7 +140,7 @@
         <div class="hand">
             Black:
             <?php
-            foreach ($hand[1] as $tile => $ct) {
+            foreach ($playerTwo->getHand() as $tile => $ct) {
                 for ($i = 0; $i < $ct; $i++) {
                     echo '<div class="tile player1"><span>'.$tile."</span></div> ";
                 }
@@ -147,22 +149,23 @@
         </div>
         <div class="turn">
             Turn: <?php
-            if ($player == 0) {
+            if ($playerAtTurn->getPlayerNumber() == 0) {
                 echo "White";
             } else {
                 echo "Black";
             } ?>
         </div>
-        <form method="post" action="src/play.php">
+        <form method="post" action="src/form_posts/play.php">
             <select name="piece">
                 <?php
-                    foreach ($hand[$player] as $tile => $ct) {
+                    foreach ($game->getPlayerAtTurn()->getHand() as $tile => $ct) {
                         echo "<option value=\"$tile\">$tile</option>";
                     }
                 ?>
             </select>
-            <select name="to">
+            <select name="toPosition">
                 <?php
+                    // deze to wordt bovenaan deze file geinstantieerd
                     foreach ($to as $pos) {
                         echo "<option value=\"$pos\">$pos</option>";
                     }
@@ -170,10 +173,10 @@
             </select>
             <input type="submit" value="Play">
         </form>
-        <form method="post" action="src/move.php">
+        <form method="post" action="src/form_posts/move.php">
             <select name="from">
                 <?php
-                    foreach (array_keys($board) as $pos) {
+                    foreach (array_keys($board->getBoard()) as $pos) {
                         echo "<option value=\"$pos\">$pos</option>";
                     }
                 ?>
@@ -187,10 +190,10 @@
             </select>
             <input type="submit" value="Move">
         </form>
-        <form method="post" action="src/pass.php">
+        <form method="post" action=<?php $game->getPlayerAtTurn()->pass();?>>
             <input type="submit" value="Pass">
         </form>
-        <form method="post" action=<?php $game->restart()?>>
+        <form method="post" action=<?php $game->restart();?>>
             <input type="submit" value="Restart">
         </form>
         <strong>
@@ -201,6 +204,7 @@
         </strong>
         <ol>
             <?php
+                // todo wat is dit?
                 $stmt = $db->getDatabase()->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
@@ -209,7 +213,7 @@
                 }
             ?>
         </ol>
-        <form method="post" action="src/undo.php">
+        <form method="post" action=<?php $game->undoLastMove();?>>
             <input type="submit" value="Undo">
         </form>
     </body>
