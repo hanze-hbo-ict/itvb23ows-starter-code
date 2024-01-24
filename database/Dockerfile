@@ -1,4 +1,3 @@
-FROM ubuntu:latest
-LABEL authors="marti"
+FROM mysql
 
-ENTRYPOINT ["top", "-b"]
+COPY ./hive.sql ./docker-entrypoint-initdb.d/

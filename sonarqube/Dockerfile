@@ -1,4 +1,3 @@
-FROM ubuntu:latest
-LABEL authors="marti"
+FROM sonarqube
 
-ENTRYPOINT ["top", "-b"]
+EXPOSE 9000
