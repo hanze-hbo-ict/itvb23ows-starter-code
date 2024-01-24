@@ -1,14 +1,20 @@
 <?php namespace app\formPosts;
 
-require_once(__DIR__ . "/../database/Database.php");
+require_once(__DIR__ . "/../Database.php");
 require_once(__DIR__ . "/../Game.php");
-use app\database\Database;
+require_once(__DIR__ . "/../Moves.php");
+
+use app\Database;
 use app\Game;
+use app\Moves;
 
 session_start();
 
+/** @var Game $game **/
 $game = $_SESSION['game'];
-$board = $game->getBoard();
-$db = $_SESSION['db'];
 
-$game->getPlayerAtTurn()->movePiece($board, $db);
+$fromPosition = $_POST['fromPosition'];
+$toPosition = $_POST['toPosition'];
+
+Moves::movePiece($fromPosition, $toPosition, $game);
+header('Location: /../../index.php');
