@@ -5,24 +5,29 @@ namespace app;
 class Board
 {
     // Board bestaat alleen uit pieces, niet uit beschikbare plekken
-    private array $board = [];
+    private array $boardTiles = [];
 
-    public function getBoard(): array
+    public function getBoardTiles(): array
     {
-        return $this->board;
+        return $this->boardTiles;
     }
 
-    public function setBoard(array $board): void
+    public function setBoardTiles(array $boardTiles): void
     {
-        $this->board = $board;
+        $this->boardTiles = $boardTiles;
+    }
+
+    public function addPiece(String $piece, int $playerNumber, String $toPosition): void
+    {
+        $this->boardTiles[$toPosition] = [$playerNumber, $piece];
     }
 
     //todo logica van util
 
     function pieceHasNeighbour($pieceOne): bool
     {
-        foreach (array_keys($this->board) as $pieceTwo) {
-            if (isNeighbour($pieceOne, $pieceTwo)) {
+        foreach (array_keys($this->boardTiles) as $pieceTwo) {
+            if ($this->pieceIsNeighbourOf($pieceOne, $pieceTwo)) {
                 return true;
             }
         }
@@ -48,7 +53,7 @@ class Board
             }
             //todo wat is c?
             $c = $st[count($st) - 1][0];
-            if ($c != $player && isNeighbour($pieceOne, $pieceTwo)) {
+            if ($c != $player && $this->pieceIsNeighbourOf($pieceOne, $pieceTwo)) {
                 return false;
             }
         }

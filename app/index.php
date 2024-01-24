@@ -1,7 +1,8 @@
 <?php
-    require_once(__DIR__ . "/src/database/Database.php");
+    require_once(__DIR__ . "/src/Database.php");
     require_once(__DIR__ . "/src/Game.php");
-    use app\database\Database;
+
+    use app\Database;
     use app\Game;
 
     //todo deze file herschrijven met gebruik van classes
@@ -9,7 +10,7 @@
 
     session_start();
 
-    //todo dit ergens anders? wat is dit uberhaupt? komt uit util
+    // Dit representeert de hexagon, de randen waar eventueel een tegel aankan.
     $GLOBALS['OFFSETS'] = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
 
     if (!isset($_SESSION['game'])) {
@@ -21,15 +22,16 @@
     }
 
     $board = $game->getBoard();
-    $playerAtTurn = $game->getPlayerAtTurn();
+    $currentPlayer = $game->getCurrentPlayer();
     $playerOne = $game->getPlayerOne();
     $playerTwo = $game->getPlayerTwo();
 
     //todo dit proberen te snappen en eventueel aanpassen ????? Zijn dit de mogelijke play posities oid?
     $to = [];
     foreach ($GLOBALS['OFFSETS'] as $offset) {
-        foreach (array_keys($board->getBoard()) as $pos) {
-            //todo pq2 is hier een string, aanpassen
+        //todo, blijkbaar zijn de boardTiles strings
+        foreach (array_keys($board->getBoardTiles()) as $pos) {
+            //todo pq2 is hier een string[], aanpassen
             $pq2 = explode(',', $pos);
             $to[] = ($offset[0] + $pq2[0]).','.($offset[1] + $pq2[1]);
         }
@@ -94,7 +96,7 @@
     <body>
         <div class="board">
             <?php
-            //todo dit proberen te snappen
+            //todo dit proberen te snappen, hier worden de tegels op het bord weergegeven?
                 $min_p = 1000;
                 $min_q = 1000;
                 foreach ($board as $pos => $tile) {
@@ -106,7 +108,7 @@
                         $min_q = $pq[1];
                     }
                 }
-                foreach (array_filter($board->getBoard()) as $pos => $tile) {
+                foreach (array_filter($board->getBoardTiles()) as $pos => $tile) {
                     $pq = explode(',', $pos);
                     $pq[0];
                     $pq[1];
@@ -129,7 +131,7 @@
         <div class="hand">
             White:
             <?php
-            //todo functie die dit kan printen? (want herhaling)
+            //todo functie die dit kan printen? (want herhaling) (heeft geen prio)
                 foreach ($playerOne->getHand() as $tile => $ct) {
                     for ($i = 0; $i < $ct; $i++) {
                         echo '<div class="tile player0"><span>'.$tile."</span></div> ";
@@ -149,16 +151,17 @@
         </div>
         <div class="turn">
             Turn: <?php
-            if ($playerAtTurn->getPlayerNumber() == 0) {
+            if ($currentPlayer->getPlayerNumber() == 0) {
                 echo "White";
             } else {
                 echo "Black";
             } ?>
         </div>
+
         <form method="post" action="src/form_posts/play.php">
             <select name="piece">
                 <?php
-                    foreach ($game->getPlayerAtTurn()->getHand() as $tile => $ct) {
+                    foreach ($game->getCurrentPlayer()->getHand() as $tile => $ct) {
                         echo "<option value=\"$tile\">$tile</option>";
                     }
                 ?>
@@ -173,15 +176,16 @@
             </select>
             <input type="submit" value="Play">
         </form>
+
         <form method="post" action="src/form_posts/move.php">
-            <select name="from">
+            <select name="fromPosition">
                 <?php
-                    foreach (array_keys($board->getBoard()) as $pos) {
+                    foreach (array_keys($board->getBoardTiles()) as $pos) {
                         echo "<option value=\"$pos\">$pos</option>";
                     }
                 ?>
             </select>
-            <select name="to">
+            <select name="toPosition">
                 <?php
                     foreach ($to as $pos) {
                         echo "<option value=\"$pos\">$pos</option>";
@@ -190,12 +194,15 @@
             </select>
             <input type="submit" value="Move">
         </form>
-        <form method="post" action=<?php $game->getPlayerAtTurn()->pass();?>>
+
+        <form method="post" action="src/form_posts/pass.php">
             <input type="submit" value="Pass">
         </form>
-        <form method="post" action=<?php $game->restart();?>>
+
+        <form method="post" action="src/form_posts/restart.php">
             <input type="submit" value="Restart">
         </form>
+
         <strong>
             <?php if (isset($_SESSION['error'])) {
                 echo $_SESSION['error'];
@@ -204,18 +211,19 @@
         </strong>
         <ol>
             <?php
-                // todo wat is dit?
-                $stmt = $db->getDatabase()->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
-                $stmt->execute();
-                $result = $stmt->get_result();
+                //todo wat is dit?
+                $gameId = $game->getGameId();
+                $result = $db->selectAllMovesFromGame($gameId);
                 while ($row = $result->fetch_array()) {
                     echo '<li>'.$row[2].' '.$row[3].' '.$row[4].'</li>';
                 }
             ?>
         </ol>
-        <form method="post" action=<?php $game->undoLastMove();?>>
+
+        <form method="post" action="src/form_posts/undo.php">
             <input type="submit" value="Undo">
         </form>
+
     </body>
 </html>
 
