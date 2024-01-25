@@ -99,7 +99,7 @@
             //todo dit proberen te snappen, hier worden de tegels op het bord weergegeven?
                 $min_p = 1000;
                 $min_q = 1000;
-                foreach ($board as $pos => $tile) {
+                foreach ($board->getBoardTiles() as $pos => $tile) {
                     $pq = explode(',', $pos);
                     if ($pq[0] < $min_p) {
                         $min_p = $pq[0];
