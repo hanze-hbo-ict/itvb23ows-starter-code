@@ -188,7 +188,16 @@ class Game
      * @return array An array containing the keys of available pieces (pieces with a count greater than 0).
      */
     public function getAvailablePieces(): array {
-        return [];
+        $availablePieces = [];
+        foreach ($this->getHand() as $key => $value) {
+            if ($value > 0) {
+                $availablePieces[] = $key;
+            }
+        }
+
+        sort($availablePieces);
+
+        return $availablePieces;
     }
 
     /**
@@ -198,7 +207,27 @@ class Game
      * player can place a piece.
      */
     public function getValidPlayMoves(): array {
-        return [];
+        $this->initializeGame();
+
+        $validMoves = [];
+        foreach ($GLOBALS["OFFSETS"] as $offset) {
+            foreach (array_keys($this->board) as $pos) {
+                [$x1, $y1] = [$offset[0], $offset[1]];
+                [$x2, $y2] = explode(",", $pos);
+
+                $newPos = ($x1 + (int)$x2) . "," . ($y1 + (int)$y2);
+
+                if ($this->turnCounter === 0 ||
+                    (!array_key_exists($newPos, $this->board) &&
+                        $this->hasNeighbour($newPos) &&
+                        ($this->turnCounter === 1 ||
+                            $this->neighboursAreSameColor($this->player, $newPos)))) {
+                    $validMoves[] = $newPos;
+                }
+            }
+        }
+
+        return count($validMoves) > 0 ? array_unique($validMoves) : ["0,0"];
     }
 
     /**

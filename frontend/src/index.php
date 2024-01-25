@@ -140,16 +140,16 @@ $hiveGame->executeAction();
         <form method="post">
             <select name="piece">
                 <?php
-                    foreach ($hand[$player] as $tile => $ct) {
-                        echo "<option value=\"$tile\">$tile</option>";
-                    }
+                foreach ($hiveGame->getAvailablePieces() as $tile) {
+                    echo "<option value='$tile'>$tile</option>";
+                }
                 ?>
             </select>
             <select name="pos">
                 <?php
-                    foreach ($to as $pos) {
-                        echo "<option value=\"$pos\">$pos</option>";
-                    }
+                foreach ($hiveGame->getValidPlayMoves() as $pos) {
+                    echo "<option value='$pos'>$pos</option>";
+                }
                 ?>
             </select>
             <button type="submit" name="action" value="play">Play</button>
