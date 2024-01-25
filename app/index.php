@@ -5,7 +5,6 @@
     use app\Database;
     use app\Game;
 
-    //todo deze file herschrijven met gebruik van classes
     //todo eventueel post actions op een andere manier?
 
     session_start();
@@ -14,10 +13,8 @@
     $GLOBALS['OFFSETS'] = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
 
     if (!isset($_SESSION['game'])) {
-        $db = new Database();
-        $game = new Game($db);
+        $game = new Game();
     } else {
-        $db = $_SESSION['db'];
         $game = $_SESSION['game'];
     }
 
@@ -213,7 +210,7 @@
             <?php
                 //todo wat is dit?
                 $gameId = $game->getGameId();
-                $result = $db->selectAllMovesFromGame($gameId);
+                $result = Database::selectAllMovesFromGame($gameId);
                 while ($row = $result->fetch_array()) {
                     echo '<li>'.$row[2].' '.$row[3].' '.$row[4].'</li>';
                 }

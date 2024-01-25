@@ -14,11 +14,10 @@ class Game
     private int $gameId;
     private int $lastMoveId;
 
-    public function __construct(Database $database)
+    public function __construct()
     {
-        $this->restart($database);
+        $this->restart();
         $_SESSION['game'] = $this;
-        $_SESSION['db'] = $database;
     }
 
     public function getBoard(): Board

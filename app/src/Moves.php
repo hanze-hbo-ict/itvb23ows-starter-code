@@ -37,7 +37,7 @@ class Moves
 
     public static function movePiece(String $fromPosition, String $toPosition, Game $game): void
     {
-        //todo deze functie herschrijven
+        //todo deze functie herschrijven, tiles moeten kunnen stapelen? Bij array push? Logica hier klopt misschien nog niet
 
         $player = $game->getCurrentPlayer();
         $playerNumber = $player->getPlayerNumber();
