@@ -374,8 +374,11 @@ class Game
                     }
                     break;
                 case "G":
-                    $this->setError("Grasshopper not implemented yet.");
-                    return;
+                    if (!$this->canGrasshopperMove($fromPos, $toPos)) {
+                        $this->setError("Grasshopper can not be moved.");
+                        return;
+                    }
+                    break;
                 case "S":
                     $this->setError("Spider not implemented yet.");
                     return;
@@ -449,6 +452,48 @@ class Game
         $board[$toPos] = $this->board[$fromPos];
 
         return $this->canMove($board, $fromPos);
+    }
+
+    /**
+     * Checks if a Grasshopper piece can make a valid move from one position to another in the Hive game.
+     *
+     * @param string $fromPos The starting position of the Grasshopper.
+     * @param string $toPos   The target position to move the Grasshopper to.
+     *
+     * @return bool Returns true if the move is valid, false otherwise.
+     */
+    private function canGrasshopperMove(string $fromPos, string $toPos): bool {
+        if ($fromPos == $toPos) {
+            return false;
+        }
+
+        [$x1, $y1] = (int)explode(',', $fromPos);
+        [$x2, $y2] = (int)explode(',', $toPos);
+
+        // Check if the grasshopper is jumping in a straight line
+        if (!($x1 == $x2 || $y1 == $y2 || ($x1 + $y1) == ($x2 + $y2))) {
+            return false;
+        }
+
+        // Check the entire jump path for obstacles or empty spaces
+        $dx = ($x2 - $x1) <=> 0;
+        $dy = ($y2 - $y1) <=> 0;
+
+        for ($i = 1; $i < max(abs($x2 - $x1), abs($y2 - $y1)); $i++) {
+            $x = $x1 + $i * $dx;
+            $y = $y1 + $i * $dy;
+            $pos = "$x,$y";
+
+            if (isset($this->board[$pos])) {
+                return false;
+            }
+
+            if (!isset($this->board[$pos]) && $pos !== $toPos) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
