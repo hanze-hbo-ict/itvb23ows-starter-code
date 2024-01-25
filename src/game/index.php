@@ -34,6 +34,10 @@
         header('Location: ./index.php');
     }
 
+    if(array_key_exists('test', $_POST)) {
+        var_dump($_SESSION['board']);
+    }
+
     // Handle 'Undo' button press
     if(array_key_exists('undo', $_POST)) {
         if (count($game->getBoard()->getBoard()) != 0){
@@ -179,6 +183,9 @@
         </ol>
         <form method="post">
             <input type="submit" name="undo" value="Undo">
+        </form>
+        <form method="post">
+            <input type="submit" name="test" value="Print">
         </form>
     </body>
 </html>

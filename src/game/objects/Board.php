@@ -41,17 +41,17 @@ class Board {
         return $to;
     }
 
-    public function hasNeighbour($to): bool
+    public function hasNeighbour($to, $board): bool
     {
-        foreach (array_keys($this->board) as $b) {
+        foreach (array_keys($board) as $b) {
             if ($this->isNeighbour($to, $b)) return true;
         }
         return false;
     }
 
-    public function neighboursAreSameColor($player, $to): bool
+    public function neighboursAreSameColor($player, $to, $board): bool
     {
-        foreach ($this->board as $b => $st) {
+        foreach ($board as $b => $st) {
             if (!$st) continue;
             $c = $st[count($st) - 1][0];
             if ($c != $player && $this->isNeighbour($to, $b)) return false;
@@ -59,10 +59,9 @@ class Board {
         return true;
     }
 
-    public function slide($from, $to): bool
+    public function slide($from, $to, $board): bool
     {
-        $board = $this->board;
-        if (!$this->hasNeighbour($to)) return false;
+        if (!$this->hasNeighbour($to, $board)) return false;
         if (!$this->isNeighbour($from, $to)) return false;
         $b = explode(',', $to);
         $common = [];

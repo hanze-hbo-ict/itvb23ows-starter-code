@@ -29,44 +29,31 @@ class MoveController
     {
         unset($_SESSION['error']);
 
-        $thisBoard = $this->board->getBoard();
-        if (!isset($thisBoard[$this->from])) {
+        $board = $this->board->getBoard();
+        if (!isset($board[$this->from])) {
             $_SESSION['error'] = 'Board position is empty';
-        } elseif ($thisBoard[$this->from][count($thisBoard[$this->from])-1][0] != $this->player) {
+        } elseif ($board[$this->from][count($board[$this->from])-1][0] != $this->player) {
             $_SESSION['error'] = "Tile is not owned by player";
         } elseif ($this->hand['Q']) {
             $_SESSION['error'] = "Queen bee is not played";
         } else {
-            $tile = array_pop($thisBoard[$this->from]);
+            $tile = array_pop($board[$this->from]);
+            unset($board[$this->from]);
 
-            if (!$this->board->hasNeighBour($this->to)) {
+            if ($tile[1] == "G" && !$this->validateGrasshopperMove($board)){
+                $_SESSION['error'] = "GrassShopper is not allowed to go there";
+            }elseif (!$this->board->hasNeighBour($this->to, $board)) {
                 $_SESSION['error'] = "Move would split hive";
             } else {
-                $all = array_keys($thisBoard);
-                $queue = [array_shift($all)];
-
-                while ($queue) {
-                    $next = explode(',', array_shift($queue));
-                    foreach ($this->board->getOffset() as $pq) {
-                        list($p, $q) = $pq;
-                        $p += $next[0];
-                        $q += $next[1];
-                        if (in_array("$p,$q", $all)) {
-                            $queue[] = "$p,$q";
-                            $all = array_diff($all, ["$p,$q"]);
-                        }
-                    }
-                }
-
-                if ($all) {
+                if (!$this->checkHiveConnected($board)) {
                     $_SESSION['error'] = "Move would split hive";
                 } else {
                     if ($this->from == $this->to) {
                         $_SESSION['error'] = 'Tile must move';
-                    } elseif (isset($thisBoard[$this->to]) && $tile[1] != "B") {
+                    } elseif (isset($board[$this->to]) && $tile[1] != "B") {
                         $_SESSION['error'] = 'Tile not empty';
                     } elseif ($tile[1] == "Q" || $tile[1] == "B") {
-                        if (!$this->board->slide($this->from, $this->to)) {
+                        if (!$this->board->slide($this->from, $this->to, $board)) {
                             $_SESSION['error'] = 'Tile must slide';
                         }
                     }
@@ -74,26 +61,131 @@ class MoveController
             }
 
             if (isset($_SESSION['error'])) {
-                if (isset($thisBoard[$this->from])) {
-                    array_push($thisBoard[$this->from], $tile);
+                if (isset($board[$this->from])) {
+                    array_push($board[$this->from], $tile);
                 } else {
-                    $thisBoard[$this->from] = [$tile];
+                    $board[$this->from] = [$tile];
                 }
             } else {
-                if (isset($thisBoard[$this->to])) {
-                    array_push($thisBoard[$this->to], $tile);
+                if (isset($board[$this->to])) {
+                    array_push($board[$this->to], $tile);
                 } else {
-                    $thisBoard[$this->to] = [$tile];
+                    $board[$this->to] = [$tile];
                 }
 
                 $_SESSION['player'] = 1 - $_SESSION['player'];
-                unset($thisBoard[$this->from]);
+                unset($board[$this->from]);
                 $lastMove = $this->database->move($_SESSION['game_id'], $this->from, $this->to, $_SESSION['last_move']);
                 $_SESSION['last_move'] = $lastMove;
             }
         }
 
-        $_SESSION['board'] = $thisBoard;
+        $_SESSION['board'] = $board;
     }
+
+    public function validateGrasshopperMove($board): bool
+    {
+        if ($this->from == $this->to) {
+            $_SESSION['error'] = 'A grasshopper can not jump in the same place';
+            return false;
+        }
+
+        $fromExploded = explode(',', $this->from);
+        $toExploded = explode(',', $this->to);
+
+
+        $direction = $this->getDirection($fromExploded, $toExploded, $board);
+        if ($direction == null) {return false;}
+
+        $p = $fromExploded[0] + $direction[0];
+        $q = $fromExploded[1] + $direction[1];
+
+        $position = $p . "," . $q;
+        $positionExploded = [$p, $q];
+
+        if (!isset($board[$position])) {
+            return false;
+        }
+
+        while (isset($board[$position])) {
+            $p = $positionExploded[0] + $direction[0];
+            $q = $positionExploded[1] + $direction[1];
+
+            $position = $p . "," . $q;
+            $positionExploded = [$p, $q];
+        }
+
+        if ($position == $this->to) {
+            return true;
+        }
+        return false;
+    }
+
+    private function getDirection($fromExploded, $toExploded): ?array
+    {
+        $from0 = $fromExploded[0];
+        $from1 = $fromExploded[1];
+        $to0 = $toExploded[0];
+        $to1 = $toExploded[1];
+
+        $differenceFrom = abs($from0 - $from1);
+        $differenceTo = abs($to0 - $to1);
+
+        if ($from0 == $to0){
+            return $to1 > $from1 ? [0, 1] : [0, -1];
+        }elseif ($from1 == $to1){
+            return $to0 > $from0 ? [1, 0] : [-1, 0];
+        }elseif ($differenceFrom == $differenceTo){
+            return $to1 > $from1 ? [-1, 1] : [1, -1];
+        }else {
+            return null;
+        }
+    }
+
+//    private function checkHiveConnected(): bool
+//    {
+//        $all = array_keys($this->board->getBoard());
+//        $queue = [array_shift($all)];
+//
+//        while ($queue) {
+//            $next = explode(',', array_shift($queue));
+//            foreach ($this->board->getOffset() as $pq) {
+//                list($p, $q) = $pq;
+//                $p += $next[0];
+//                $q += $next[1];
+//                if (in_array("$p,$q", $all)) {
+//                    $queue[] = "$p,$q";
+//                    $all = array_diff($all, ["$p,$q"]);
+//                }
+//            }
+//        }
+//
+//        return $all;
+//    }
+
+    private function checkHiveConnected($board): array
+    {
+        $all = array_keys($board);
+        $queue = [array_shift($all)];
+
+        while ($queue) {
+            $next = explode(',', array_shift($queue));
+            foreach ($this->board->getOffset() as $pq) {
+                list($p, $q) = $pq;
+                $p += $next[0];
+                $q += $next[1];
+
+                $position = $p . "," . $q;
+
+                if (in_array($position, $all)) {
+                    $queue[] = $position;
+                    $all = array_diff($all, [$position]);
+                }
+            }
+        }
+
+        return $all;
+    }
+
 }
 
