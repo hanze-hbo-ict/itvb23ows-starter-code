@@ -17,6 +17,14 @@ pipeline {
                 echo 'Sonarqube working...'
             }
         }
+
+        stage('Run PHP Tests') {
+            steps {
+                dir('frontend') {
+                    sh 'phpunit src/tests'
+                }
+            }
+        }
     }
 
     post {

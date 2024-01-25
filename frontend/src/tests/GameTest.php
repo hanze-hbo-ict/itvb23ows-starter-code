@@ -1,8 +1,11 @@
 <?php
+use Classes\DatabaseHandler;
+use Classes\Game;
 
-namespace classes\tests;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\MockObject\Stub;
 
-class GameTest
+class GameTest extends TestCase
 {
     private Game $hive;
     private Stub $dbStub;
