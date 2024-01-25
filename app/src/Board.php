@@ -4,7 +4,7 @@ namespace app;
 
 class Board
 {
-    // Board bestaat alleen uit pieces, niet uit beschikbare plekken
+    // Board bestaat alleen uit tiles, niet uit alle beschikbare plekken
     private array $boardTiles = [];
 
     /**
@@ -50,7 +50,7 @@ class Board
     }
 
     function neighboursOfPieceAreTheSameColor($player, $pieceOne) {
-        foreach ($this as $pieceTwo => $st) {
+        foreach ($this->getBoardTiles() as $pieceTwo => $st) {
             //todo wat is st?
             if (!$st) {
                 continue;
@@ -62,7 +62,6 @@ class Board
             }
         }
         return true;
-
     }
 
 }
