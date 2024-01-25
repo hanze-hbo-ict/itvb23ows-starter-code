@@ -1,10 +1,8 @@
 <?php namespace app\formPosts;
 
-require_once(__DIR__ . "/../Database.php");
 require_once(__DIR__ . "/../Game.php");
 require_once(__DIR__ . "/../Moves.php");
 
-use app\Database;
 use app\Game;
 use app\Moves;
 
@@ -17,4 +15,5 @@ $fromPosition = $_POST['fromPosition'];
 $toPosition = $_POST['toPosition'];
 
 Moves::movePiece($fromPosition, $toPosition, $game);
+
 header('Location: /../../index.php');
