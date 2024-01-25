@@ -1,6 +1,18 @@
 <?php
-    require_once 'vendor/autoload.php';
-    session_start();
+require_once 'vendor/autoload.php';
+
+use Classes\Game;
+
+session_start();
+
+$hiveGame = new Game();
+
+if (!isset($_SESSION['board'])) {
+    $hiveGame->restart();
+}
+
+$hiveGame->executeAction();
+
 
     include_once 'util.php';
 
@@ -125,7 +137,7 @@
         <div class="turn">
             Turn: <?php if ($player == 0) echo "White"; else echo "Black"; ?>
         </div>
-        <form method="post" action="play.php">
+        <form method="post">
             <select name="piece">
                 <?php
                     foreach ($hand[$player] as $tile => $ct) {
@@ -133,14 +145,14 @@
                     }
                 ?>
             </select>
-            <select name="to">
+            <select name="pos">
                 <?php
                     foreach ($to as $pos) {
                         echo "<option value=\"$pos\">$pos</option>";
                     }
                 ?>
             </select>
-            <input type="submit" value="Play">
+            <button type="submit" name="action" value="play">Play</button>
         </form>
         <form method="post" action="move.php">
             <select name="from">
@@ -162,10 +174,12 @@
         <form method="post" action="pass.php">
             <input type="submit" value="Pass">
         </form>
-        <form method="post" action="restart.php">
-            <input type="submit" value="Restart">
+        <form method="post">
+            <button type="submit" name="action" value="restart">Restart</button>
         </form>
-        <strong><?php if (isset($_SESSION['error'])) echo($_SESSION['error']); unset($_SESSION['error']); ?></strong>
+        <strong>
+            <?= $_SESSION["error"] ?>
+        </strong>
         <ol>
             <?php
                 $db = include 'database.php';

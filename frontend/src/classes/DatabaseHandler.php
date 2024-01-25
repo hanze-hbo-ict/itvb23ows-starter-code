@@ -1,6 +1,8 @@
 <?php
 
-namespace classes;
+namespace Classes;
+
+use mysqli;
 
 class DatabaseHandler
 {
@@ -22,6 +24,51 @@ class DatabaseHandler
 
         return $db->insert_id;
     }
+
+    /**
+     * Executes a generic action in the Hive game.
+     *
+     * @param int         $gameId The ID of the game.
+     * @param string      $action The type of action (e.g., "move", "pass").
+     * @param string|null $fromPos The position from which the move is made (null for pass action).
+     * @param string|null $toPos The position to which the move is made (null for pass action).
+     * @param int | null         $prevId The ID of the previous move.
+     * @param string      $state The state of the game.
+     *
+     * @return int The ID of the newly inserted move.
+     */
+    private function doAction(
+        int $gameId,
+        string $action,
+        string | null $fromPos,
+        string | null $toPos,
+        int | null $prevId,
+        string $state
+    ): int {
+        $db = $this->getConnection();
+        $cmd = "INSERT INTO moves (game_id, type, move_from, move_to, previous_id, state) VALUES (?, ?, ?, ?, ?, ?);";
+        $stmt = $db->prepare($cmd);
+        $stmt->bind_param("issiis", $gameId, $action, $fromPos, $toPos, $prevId, $state);
+        $stmt->execute();
+
+        return $db->insert_id;
+    }
+
+    /**
+     * Adds a play move action in the Hive game.
+     *
+     * @param int    $gameId The ID of the game.
+     * @param string $piece  The piece being played.
+     * @param string $toPos  The position to which the piece is played.
+     * @param int | null    $prevId The ID of the previous move.
+     * @param string $state  The state of the game.
+     *
+     * @return int The ID of the newly inserted move.
+     */
+    public function addMove(int $gameId, string $piece, string $toPos, int | null $prevId, string $state): int {
+        return $this->doAction($gameId, "play", $piece, $toPos, $prevId, $state);
+    }
+
 
     /**
      * Gets the database connection for the Hive game.
