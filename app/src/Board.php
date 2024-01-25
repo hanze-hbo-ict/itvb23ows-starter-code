@@ -7,6 +7,10 @@ class Board
     // Board bestaat alleen uit pieces, niet uit beschikbare plekken
     private array $boardTiles = [];
 
+    /**
+     * boardTile in boardTiles = [String position, [[int playerNumber, String $piece],[...],] ]
+     * @return array
+     */
     public function getBoardTiles(): array
     {
         return $this->boardTiles;
@@ -19,7 +23,7 @@ class Board
 
     public function addPiece(String $piece, int $playerNumber, String $toPosition): void
     {
-        $this->boardTiles[$toPosition] = [$playerNumber, $piece];
+        $this->boardTiles[$toPosition] = [[$playerNumber, $piece]];
     }
 
     //todo logica van util
