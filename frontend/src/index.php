@@ -154,26 +154,28 @@ $hiveGame->executeAction();
             </select>
             <button type="submit" name="action" value="play">Play</button>
         </form>
-        <form method="post" action="move.php">
-            <select name="from">
-                <?php
-                    foreach (array_keys($board) as $pos) {
+        <?php if ($_SESSION["turn_counter"] > 1) { ?>
+            <form method="post">
+                <select name="from">
+                    <?php
+                    foreach ($hiveGame->getOccupiedPositions() as $pos) {
+                        echo "<option value='$pos'>$pos</option>";
+                    }
+                    ?>
+                </select>
+                <select name="to">
+                    <?php
+                    foreach ($hiveGame->getBoundaries() as $pos) {
                         echo "<option value=\"$pos\">$pos</option>";
                     }
-                ?>
-            </select>
-            <select name="to">
-                <?php
-                    foreach ($to as $pos) {
-                        echo "<option value=\"$pos\">$pos</option>";
-                    }
-                ?>
-            </select>
-            <input type="submit" value="Move">
-        </form>
-        <form method="post" action="pass.php">
-            <input type="submit" value="Pass">
-        </form>
+                    ?>
+                </select>
+                <button type="submit" name="action" value="move">Move</button>
+            </form>
+            <form method="post">
+                <button type="submit" name="action" value="pass">Pass</button>
+            </form>
+        <?php } ?>
         <form method="post">
             <button type="submit" name="action" value="restart">Restart</button>
         </form>

@@ -13,6 +13,21 @@ class DatabaseHandler
     private string $database = 'hive';
 
     /**
+     * Executes a move action in the Hive game.
+     *
+     * @param int    $gameId The ID of the game.
+     * @param string $fromPos The position from which the move is made.
+     * @param string $toPos The position to which the move is made.
+     * @param int    $prevId The ID of the previous move.
+     * @param string $state The state of the game.
+     *
+     * @return int The ID of the newly inserted move.
+     */
+    public function doMove(int $gameId, string $fromPos, string $toPos, int $prevId, string $state): int {
+        return $this->doAction($gameId, "move", $fromPos, $toPos, $prevId, $state);
+    }
+
+    /**
      * Restarts the Hive game by creating a new game instance in the database.
      *
      * @return int The ID of the newly created game instance.

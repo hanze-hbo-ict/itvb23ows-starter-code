@@ -103,6 +103,28 @@ class Game
     }
 
     /**
+     * Checks if a given position has a neighbor of the same color on the provided board.
+     *
+     * @param string $fromPos The position to check for same-color neighbors.
+     * @param array $board The board representing the goal state of the move.
+     * @return bool Returns true if a same-color neighbor is found, false otherwise.
+     */
+    private function hasSameColorNeighbour(string $fromPos, array $board): bool {
+        foreach ($board as $pos => $pieces) {
+            if (!$pieces) {
+                continue;
+            }
+
+            $player = $pieces[count($pieces) - 1][0];
+
+            if ($player == $this->player && $this->isNeighbour($pos, $fromPos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if two given board positions are neighbors on the hive board.
      *
      * @param string $a The coordinates of the first board position (in the format "x,y").
@@ -237,7 +259,58 @@ class Game
      * current player are placed.
      */
     public function getOccupiedPositions(): array {
-        return [];
+        $this->initializeGame();
+
+        $positions = [];
+
+        foreach ($this->board as $pos => $move) {
+            if (!$move) {
+                //No piece placed in this position
+                continue;
+            }
+
+            $player = $move[count($move) - 1][0];
+
+            if ($player === $this->player) {
+                $positions[] = $pos;
+            }
+        }
+        return $positions;
+    }
+
+    /**
+     * Retrieves an array of all positions within the boundaries of the current game board.
+     *
+     * @return array An array containing all positions within the boundaries.
+     */
+    public function getBoundaries(): array {
+        if (!isset($this->board)) {
+            $this->initializeGame();
+        }
+
+        $minX = PHP_INT_MAX;
+        $maxX = PHP_INT_MIN;
+        $minY = PHP_INT_MAX;
+        $maxY = PHP_INT_MIN;
+
+        foreach ($this->board as $position => $values) {
+            [$x, $y] = array_map('intval', explode(',', $position));
+
+            $minX = min($minX, $x);
+            $maxX = max($maxX, $x);
+            $minY = min($minY, $y);
+            $maxY = max($maxY, $y);
+        }
+
+        $positions = [];
+
+        for ($i = $minX - 1; $i <= $maxX + 1; $i++) {
+            for ($j = $minY - 1; $j <= $maxY + 1; $j++) {
+                $positions[] = "$i,$j";
+            }
+        }
+
+        return $positions;
     }
 
     /**
@@ -266,7 +339,164 @@ class Game
      * @return void
      */
     public function move(string $fromPos, string $toPos): void {
+        $hand = $this->getHand();
 
+        if (!isset($this->board[$fromPos])) {
+            $this->setError("The board position does not have a piece.");
+        } elseif ($this->turnCounter >= 6 && (($hand["Q"] ?? 0) != 0)) {
+            $this->setError("The queen bee has to be played this turn.");
+        } elseif ($this->board[$fromPos][count($this->board[$fromPos])-1][0] != $this->player) {
+            $this->setError("This piece is not owned by you.");
+        } else {
+            $currentEntries = $this->board[$fromPos];
+            $piece = $currentEntries[count($currentEntries)-1][1];
+
+            switch ($piece) {
+                case "Q":
+                    if (!$this->canQueenMove($fromPos, $toPos)) {
+                        $this->setError("Queen can not be moved.");
+                        return;
+                    }
+                    break;
+                case "B":
+                    if (!$this->canBeetleMove($fromPos, $toPos)) {
+                        $this->setError("Beetle can not be moved.");
+                        return;
+                    }
+                    break;
+                case "G":
+                    $this->setError("Grasshopper not implemented yet.");
+                    return;
+                case "S":
+                    $this->setError("Spider not implemented yet.");
+                    return;
+                case "A":
+                    $this->setError("Soldier Ant not implemented yet.");
+                    return;
+                default:
+                    $this->setError("Unknown piece played");
+                    return;
+            }
+
+            if (!isset($this->board[$toPos])) {
+                $this->board[$toPos] = [[$this->player, $piece]];
+            } else {
+                $target = $this->board[$toPos];
+                $target[] = [$this->player, $piece];
+                $this->board[$toPos] = $target;
+            }
+
+            if (count($currentEntries) == 1) {
+                unset($this->board[$fromPos]);
+            } else {
+                $this->board[$fromPos] = array_slice($currentEntries, -1);
+            }
+
+            $this->prevMoveId = $this->databaseHandler->
+                doMove($this->gameId, $fromPos, $toPos, $this->prevMoveId, $this->getSerializedState());
+            $this->turnCounter++;
+            $this->player = ($this->player + 1) % 2;
+        }
+    }
+
+    /**
+     * Checks if a movement is allowed for a Queen piece in the Hive game.
+     *
+     * @param string $fromPos The starting position of the Queen (in the format "x,y").
+     * @param string $toPos   The target position for the Queen (in the format "x,y").
+     *
+     * @return bool Returns true if the movement is allowed, false otherwise.
+     */
+    private function canQueenMove(string $fromPos, string $toPos): bool {
+        if (!$this->hasBeetleOnTop($fromPos) &&
+            !isset($this->board[$toPos]) &&
+            $this->isNeighbour($fromPos, $toPos)) {
+            $board = $this->copyArray($this->board);
+            unset($board[$fromPos]);
+            $board[$toPos] = $this->board[$fromPos];
+
+            return $this->canMove($board, $fromPos);
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if a movement is allowed for a Beetle piece in the Hive game.
+     *
+     * @param string $fromPos The starting position of the Beetle (in the format "x,y").
+     * @param string $toPos   The target position for the Beetle (in the format "x,y").
+     *
+     * @return bool Returns true if the movement is allowed, false otherwise.
+     */
+    private function canBeetleMove(string $fromPos, string $toPos): bool {
+        if ($this->hasBeetleOnTop($fromPos) || !$this->isNeighbour($fromPos, $toPos)) {
+            return false;
+        }
+
+        // Create a copy of the board
+        $board = $this->copyArray($this->board);
+        unset($board[$fromPos]);
+        $board[$toPos] = $this->board[$fromPos];
+
+        return $this->canMove($board, $fromPos);
+    }
+
+    /**
+     * Checks if a move is valid on the given board based on connectivity to existing pieces.
+     *
+     * @param array $board The board representing the goal state of the move.
+     * @param string $fromPos The starting position of the move.
+     * @return bool Returns true if the move is valid, false otherwise.
+     */
+    private function canMove(array $board, string $fromPos): bool {
+        if (!$this->hasSameColorNeighbour($fromPos, $board)) {
+            return false;
+        }
+
+        $all = array_keys($this->board);
+        $queue = [array_shift($all)];
+        while ($queue) {
+            $next = explode(',', array_shift($queue));
+            foreach ($GLOBALS['OFFSETS'] as $pq) {
+                list($p, $q) = $pq;
+                $p += $next[0];
+                $q += $next[1];
+                if (in_array("$p,$q", $all)) {
+                    $queue[] = "$p,$q";
+                    $all = array_diff($all, ["$p,$q"]);
+                }
+            }
+        }
+
+        if ($all) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if there is a beetle on top of a specified position on the board.
+     *
+     * @param string $pos Coordinates of the specified position (in the format "x,y").
+     * @return bool Returns true if there is a beetle on top, false otherwise.
+     */
+    private function hasBeetleOnTop(string $pos): bool {
+        if (!isset($this->board[$pos])) {
+            return false;
+        }
+
+        $posValue = $this->board[$pos];
+
+        $topOfStack = $posValue[count($posValue) - 1];
+
+
+
+        if ($topOfStack[0] == $this->player) {
+            return false;
+        }
+
+        return true;
     }
 
 
@@ -331,6 +561,17 @@ class Game
         $_SESSION["turn_counter"] = $this->turnCounter;
         $_SESSION["error"] = $this->error;
         $_SESSION["game_status"] = $this->gameStatus;
+    }
+
+    /**
+     * Creates a shallow copy of an array.
+     *
+     * @param array $array The array to be copied.
+     *
+     * @return array A shallow copy of the original array.
+     */
+    private function copyArray(array $array): array {
+        return array_merge([], $array);
     }
 
     /**
