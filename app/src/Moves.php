@@ -4,7 +4,6 @@ namespace app;
 
 class Moves
 {
-    //todo deze functies herschrijven
     public static function playPiece(String $piece, String $toPosition, Game $game): void
     {
         $player = $game->getCurrentPlayer();
@@ -13,7 +12,7 @@ class Moves
         $hand = $player->getHand();
         $playerNumber = $player->getPlayerNumber();
 
-        // todo errors anders?
+        // todo errors anders? / Dit zijn geen echte errors, maar meer zetten die niet mogen
         if (!$hand[$piece]) {
             $_SESSION['error'] = "Player does not have tile";
         } elseif (isset($boardTiles[$toPosition])) {
@@ -37,77 +36,113 @@ class Moves
 
     public static function movePiece(String $fromPosition, String $toPosition, Game $game): void
     {
-        //todo deze functie herschrijven, tiles moeten kunnen stapelen? Bij array push? Logica hier klopt misschien nog niet
+        // todo checken of stapelen werkt
 
         $player = $game->getCurrentPlayer();
-        $playerNumber = $player->getPlayerNumber();
-        $hand = $player->getHand();
         $board = $game->getBoard();
         $boardTiles = $board->getBoardTiles();
+
+        $tile = array_pop($boardTiles[$fromPosition]);
+        //check if move is legal
+        if (self::moveTileIsLegal($board, $player, $fromPosition, $toPosition)) {
+            if (isset($boardTiles[$toPosition])) {
+                array_push($boardTiles[$toPosition], $tile);
+            } else {
+                $boardTiles[$toPosition] = [$tile];
+            }
+            Database::addMoveToDatabase($game, "move", toPosition: $toPosition, fromPosition: $fromPosition);
+            $game->setLastMoveId(Database::getLastMoveId());
+            $game->switchTurn();
+        } else {
+            if (isset($boardTiles[$fromPosition])) {
+                array_push($boardTiles[$fromPosition], $tile);
+            } else {
+                $boardTiles[$fromPosition] = [$tile];
+            }
+        }
+        //todo weet niet zeker of dit klopt, de boardTiles moeten iig veranderd worden naar de nieuwe situatie
+        $board->setBoardTiles($boardTiles);
+    }
+
+    private static function moveTileIsLegal(Board $board, Player $player, $fromPosition, $toPosition): bool
+    {
+        $boardTiles = $board->getBoardTiles();
+        $playerNumber = $player->getPlayerNumber();
+        $hand = $player->getHand();
+
         unset($_SESSION['error']);
 
+        return (
+            self::thereIsATileToMoveLegally($boardTiles, $hand, $playerNumber, $fromPosition) &&
+            self::tileMoveWontSplitHive($board, $fromPosition) &&
+            self::tileToMoveCanMove($board, $fromPosition, $toPosition)
+        );
+    }
+
+    private static function thereIsATileToMoveLegally($boardTiles, $hand, $playerNumber, $fromPosition): bool
+    {
         if (!isset($boardTiles[$fromPosition])) {
             $_SESSION['error'] = 'Board position is empty';
+            return false;
         }
         elseif ($boardTiles[$fromPosition][count($boardTiles[$fromPosition])-1][0] != $playerNumber) {
             $_SESSION['error'] = "Tile is not owned by player";
+            return false;
         }
         elseif ($hand['Q']) {
             $_SESSION['error'] = "Queen bee is not played";
+            return false;
         }
-        else {
-            $tile = array_pop($boardTiles[$fromPosition]);
-            if (!$board->pieceHasNeighbour($toPosition)) {
-                $_SESSION['error'] = "Move would split hive";
-            } else {
-                $all = array_keys($boardTiles);
-                $queue = [array_shift($all)];
-                while ($queue) {
-                    $next = explode(',', array_shift($queue));
-                    foreach ($GLOBALS['OFFSETS'] as $pq) {
-                        list($p, $q) = $pq;
-                        $p += $next[0];
-                        $q += $next[1];
-                        if (in_array("$p,$q", $all)) {
-                            $queue[] = "$p,$q";
-                            $all = array_diff($all, ["$p,$q"]);
-                        }
-                    }
-                }
-                if ($all) {
-                    $_SESSION['error'] = "Move would split hive";
-                } else {
-                    if ($fromPosition == $toPosition) {
-                        $_SESSION['error'] = 'Tile must move';
-                    } elseif (isset($boardTiles[$toPosition]) && $tile[1] != "B") {
-                        $_SESSION['error'] = 'Tile not empty';
-                    } elseif ($tile[1] == "Q" || $tile[1] == "B") {
-                        if (!Moves::slide($board, $fromPosition, $toPosition)) {
-                            $_SESSION['error'] = 'Tile must slide';
-                        }
-                    }
-                }
-            }
-            if (isset($_SESSION['error'])) {
-                if (isset($boardTiles[$fromPosition])) {
-                    array_push($boardTiles[$fromPosition], $tile);
-                } else {
-                    $boardTiles[$fromPosition] = [$tile];
-                }
-            } else {
-                if (isset($boardTiles[$toPosition])) {
-                    array_push($boardTiles[$toPosition], $tile);
-                } else {
-                    $boardTiles[$toPosition] = [$tile];
-                }
+        return true;
+    }
 
-                Database::addMoveToDatabase($game, "move", toPosition: $toPosition, fromPosition: $fromPosition);
-                $game->setLastMoveId(Database::getLastMoveId());
-                $game->switchTurn();
+    private static function tileMoveWontSplitHive(Board $board, $toPosition): bool
+    {
+        // todo var namen anders (begrijpen wat ermee bedoeld wordt)
+        $boardTiles = $board->getBoardTiles();
+        if (!$board->pieceHasNeighbour($toPosition)) {
+            $_SESSION['error'] = "Move would split hive";
+            return false;
+        } else {
+            $allTiles = array_keys($boardTiles);
+            $queue = [array_shift($allTiles)];
+            while ($queue) {
+                $next = explode(',', array_shift($queue));
+                foreach ($GLOBALS['OFFSETS'] as $position) {
+                    list($p, $q) = $position;
+                    $p += $next[0];
+                    $q += $next[1];
+                    if (in_array("$p,$q", $allTiles)) {
+                        $queue[] = "$p,$q";
+                        $allTiles = array_diff($allTiles, ["$p,$q"]);
+                    }
+                }
             }
-            //todo weet niet zeker of dit klopt
-            $board->setBoardTiles($boardTiles);
+            if ($allTiles) {
+                $_SESSION['error'] = "Move would split hive";
+                return false;
+            }
         }
+        return true;
+    }
+
+    private static function tileToMoveCanMove(Board $board, $fromPosition, $toPosition): bool
+    {
+        $boardTiles = $board->getBoardTiles();
+        $tile = array_pop($boardTiles[$fromPosition]);
+        if ($fromPosition == $toPosition) {
+            $_SESSION['error'] = 'Tile must move';
+            return false;
+        } elseif (isset($boardTiles[$toPosition]) && $tile[1] != "B") {
+            $_SESSION['error'] = 'Tile not empty';
+            return false;
+        } elseif ($tile[1] == "Q" || $tile[1] == "B") {
+            if (!self::slide($board, $fromPosition, $toPosition)) {
+                $_SESSION['error'] = 'Tile must slide';
+                return false;
+            }
+        }
+        return true;
     }
 
     public static function pass(Game $game): void
@@ -149,7 +184,7 @@ class Moves
         if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
             return false;
         }
-        return min(Moves::len($board[$common[0]]), Moves::len($board[$common[1]])) <= max(Moves::len($board[$from]), Moves::len($board[$to]));
+        return min(self::len($board[$common[0]]), self::len($board[$common[1]])) <= max(self::len($board[$from]), self::len($board[$to]));
     }
 
 
