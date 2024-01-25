@@ -72,6 +72,8 @@ class Game
             $this->setError("You don't have this piece available.");
         } elseif (count($this->board) > 0 && !$this->hasNeighbour($pos)) {
             $this->setError("The board position has no neighboring cells.");
+        } elseif ($piece != "Q" && $this->turnCounter >= 6 && (($hand["Q"] ?? 0) != 0)) {
+            $this->setError("The queen bee has to be played this turn.");
         } elseif (array_sum($hand) < 11 && !$this->neighboursAreSameColor($this->player, $pos)) {
             $this->setError("The board position is adjacent to an opposing piece, this is not possible.");
         } else {
