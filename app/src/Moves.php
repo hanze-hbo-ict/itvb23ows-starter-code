@@ -28,7 +28,7 @@ class Moves
             $board->addPiece($piece, $playerNumber, $toPosition);
             $player->removePieceFromHand($piece);
             $game->switchTurn();
-            Database::addMoveToDatabase($game, $toPosition, "play");
+            Database::addMoveToDatabase($game,"play", toPosition: $toPosition);
 
             //change last move to just done move
             $game->setLastMoveId(Database::getLastMoveId());
@@ -100,21 +100,26 @@ class Moves
                 } else {
                     $boardTiles[$toPosition] = [$tile];
                 }
-                $game->switchTurn();
 
-                Database::addMoveToDatabase($game, $toPosition, "play", fromPosition: $fromPosition);
-
+                Database::addMoveToDatabase($game, "move", toPosition: $toPosition, fromPosition: $fromPosition);
                 $game->setLastMoveId(Database::getLastMoveId());
+                $game->switchTurn();
             }
             //todo weet niet zeker of dit klopt
             $board->setBoardTiles($boardTiles);
         }
     }
 
-    public function pass() {
-        //todo
+    public static function pass(Game $game): void
+    {
+        Database::addMoveToDatabase($game, "pass");
+        $game->setLastMoveId(Database::getLastMoveId());
+        $game->switchTurn();
     }
 
+    public function undoLastMove() {
+        //todo
+    }
 
 
     private function len($tile): int

@@ -4,7 +4,7 @@ use mysqli;
 
 class Database {
 
-    public static function addMoveToDatabase(Game $game, String $toPosition, String $type, $fromPosition = ''): void
+    public static function addMoveToDatabase(Game $game, String $type, String $toPosition = '', $fromPosition = ''): void
     {
         $db = Database::initDatabase();
         if ($db->connect_error) {
