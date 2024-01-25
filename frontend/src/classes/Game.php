@@ -380,8 +380,11 @@ class Game
                     }
                     break;
                 case "S":
-                    $this->setError("Spider not implemented yet.");
-                    return;
+                    if (!$this->canSpiderMove($fromPos, $toPos)) {
+                        $this->setError("Spider can not be moved.");
+                        return;
+                    }
+                    break;
                 case "A":
                     $this->setError("Soldier Ant not implemented yet.");
                     return;
@@ -495,6 +498,75 @@ class Game
 
         return true;
     }
+
+    /**
+     * Checks if a spider can move from the starting position to the target position within a specified number of steps,
+     * considering a provided board configuration.
+     *
+     * @param string $fromPos The starting position of the spider (in the format "x,y").
+     * @param string $toPos The target position the spider wants to reach (in the format "x,y").
+     * @param int $steps The maximum number of steps the spider can take to reach the target position.
+     * @param array|null $visited An array to keep track of visited positions during the recursive exploration.
+     * @param array|null $board The board configuration to consider for the movement check. If not provided, the main board is used.
+     * @return bool Returns true if the spider can reach the target position within the specified steps, false otherwise.
+     */
+    private function canSpiderMove(
+        string $fromPos,
+        string $toPos,
+        int $steps = 2,
+        array $visited = null,
+        array $board = null
+    ): bool {
+        if ($steps === 0 && $fromPos == $toPos) {
+            return true;
+        }
+
+        if ($fromPos == $toPos || $this->hasBeetleOnTop($fromPos)) {
+            return false;
+        }
+
+        $board = $board ?? $this->board;
+
+        $visited = $visited ?? [];
+        $visited[$fromPos] = true;
+
+        $directions = $GLOBALS['OFFSETS'];
+
+        [$x, $y] = explode(',', $fromPos);
+
+        foreach ($directions as [$dx, $dy]) {
+            $newX = (int)$x + $dx;
+            $newY = (int)$y + $dy;
+            $newPos = "$newX,$newY";
+
+            if (!$this->isNeighbour($fromPos, $newPos)) {
+                continue;
+            }
+
+            if (!isset($board[$toPos])) {
+                $board = $this->copyArray($this->board);
+
+                unset($board[$fromPos]);
+
+                // Check if neighbors of the target position have the same color as the player
+                if (!$this->canMove($board, $fromPos)) {
+                    continue;
+                }
+            }
+
+
+            if (!isset($visited[$newPos]) && $steps > 0) {
+                if ($this->canSpiderMove($newPos, $toPos, $steps - 1, $visited, $board)) {
+                    return true;
+                }
+            }
+        }
+
+        unset($visited[$fromPos]);
+
+        return false;
+    }
+
 
     /**
      * Checks if a move is valid on the given board based on connectivity to existing pieces.
