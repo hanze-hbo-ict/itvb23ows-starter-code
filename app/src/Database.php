@@ -13,7 +13,7 @@ class Database {
         $stmt = $db->prepare('insert into moves
             (game_id, type, move_from, move_to, previous_id, state)
             values (?, ?, ?, ?, ?, ?)');
-        $state = Database::getState($game);
+        $state = $game->getState();
         $gameId = $game->getGameId();
         $lastMoveId = $game->getLastMoveId();
         $stmt->bind_param('isssis', $gameId,$type, $fromPosition, $toPosition, $lastMoveId, $state);
@@ -39,37 +39,23 @@ class Database {
         return $stmt->get_result();
     }
 
+    public static function selectLastMoveFromGame(Game $game) {
+        $db = Database::initDatabase();
+        if ($db->connect_error) {
+            die("Connection failed: " . $db->connect_error);
+        }
+        $lastMoveId = $game->getLastMoveId();
+        $stmt = $db->prepare('SELECT * FROM moves WHERE id = '.$lastMoveId);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_array();
+    }
+
     public static function getLastMoveId() {
         $db = Database::initDatabase();
         if ($db->connect_error) {
             die("Connection failed: " . $db->connect_error);
         }
         return $db->insert_id;
-    }
-
-    public static function getState(Game $game): string
-    {
-        $hand = $game->getCurrentPlayer()->getHand();
-        $board = $game->getBoard()->getBoardTiles();
-        $player = $game->getCurrentPlayer()->getPlayerNumber();
-
-        return serialize([$hand, $board, $player]);
-    }
-
-    public static function setState($state, Game $game): void
-    {
-        list($a, $b, $c) = unserialize($state);
-        $hand = $a;
-        $board = $b;
-        $player = $c;
-
-        if ($player == 0) {
-            $game->getPlayerOne()->setHand($hand);
-        } else {
-            $game->getPlayerTwo()->setHand($hand);
-        }
-        $game->getBoard()->setBoardTiles($board);
-        $game->switchTurn();
     }
 
     private static function initDatabase(): mysqli

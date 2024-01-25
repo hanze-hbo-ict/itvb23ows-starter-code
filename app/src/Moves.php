@@ -117,8 +117,11 @@ class Moves
         $game->switchTurn();
     }
 
-    public function undoLastMove() {
-        //todo
+    public static function undoLastMove(Game $game): void
+    {
+        $result = Database::selectLastMoveFromGame($game);
+        $game->setLastMoveId($result[5]);
+        $game->setState($result[6], $game);
     }
 
 
@@ -146,7 +149,7 @@ class Moves
         if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
             return false;
         }
-        return min(len($board[$common[0]]), len($board[$common[1]])) <= max(len($board[$from]), len($board[$to]));
+        return min($this->len($board[$common[0]]), $this->len($board[$common[1]])) <= max($this->len($board[$from]), $this->len($board[$to]));
     }
 
 

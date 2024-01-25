@@ -99,4 +99,30 @@ class Game
         $this->setLastMoveId(Database::getLastMoveId());
     }
 
+    public function getState(): string
+    {
+        $hand = $this->getCurrentPlayer()->getHand();
+        $board = $this->getBoard()->getBoardTiles();
+        $player = $this->getCurrentPlayer()->getPlayerNumber();
+
+        return serialize([$hand, $board, $player]);
+    }
+
+    public function setState($state): void
+    {
+        list($a, $b, $c) = unserialize($state);
+        $hand = $a;
+        $board = $b;
+        $player = $c;
+
+        if ($player == 0) {
+            $this->getPlayerOne()->setHand($hand);
+        } else {
+            $this->getPlayerTwo()->setHand($hand);
+        }
+        $this->getBoard()->setBoardTiles($board);
+        $this->switchTurn();
+    }
+
+
 }
