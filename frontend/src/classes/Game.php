@@ -386,8 +386,11 @@ class Game
                     }
                     break;
                 case "A":
-                    $this->setError("Soldier Ant not implemented yet.");
-                    return;
+                    if (!$this->canAntMove($fromPos, $toPos)) {
+                        $this->setError("Soldier ant can not be moved.");
+                        return;
+                    }
+                    break;
                 default:
                     $this->setError("Unknown piece played");
                     return;
@@ -563,6 +566,58 @@ class Game
         }
 
         unset($visited[$fromPos]);
+
+        return false;
+    }
+
+    /**
+     * Check if a soldier ant can move from one position to another on the Hive board.
+     *
+     * @param string         $fromPos The current position of the soldier ant.
+     * @param string         $toPos   The target position for the soldier ant to move to.
+     * @param array | null   $board   The current state of the Hive board (optional).
+     *
+     * @return bool True if the soldier ant can move to the target position, false otherwise.
+     */
+    private function canAntMove(string $fromPos, string $toPos, array | null $board = null): bool {
+        if ($fromPos == $toPos ||
+            !$this->isNeighbour($fromPos, $toPos) ||
+            isset($this->board[$toPos])) {
+            return false;
+        }
+
+        $directions = $GLOBALS["OFFSETS"];
+
+        [$x, $y] = (int)explode(",", $fromPos);
+
+        $boundaries = $this->getBoundaries();
+
+        $board = $board ?? $this->board;
+
+        foreach ($directions as [$dx, $dy]) {
+            $newX = $x + $dx;
+            $newY = $y + $dy;
+            $newPos = "$newX,$newY";
+
+            if (!in_array($newPos, $boundaries)) {
+                continue;
+            }
+
+            $value = $board[$fromPos];
+
+            unset($board[$fromPos]);
+
+            if ($this->neighboursAreSameColor($this->player, $newPos, $board)) {
+                if ($toPos == $newPos) {
+                    return true;
+                }
+
+                $board[$newPos] = $value;
+                return $this->canAntMove($newPos, $toPos, $board);
+            }
+
+            $board[$fromPos] = $value;
+        }
 
         return false;
     }
