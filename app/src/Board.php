@@ -38,7 +38,7 @@ class Board
 
     //todo logica van util
 
-    function pieceHasNeighbour($pieceOne): bool
+    public function pieceHasNeighbour($pieceOne): bool
     {
         foreach (array_keys($this->boardTiles) as $pieceTwo) {
             if ($this->pieceIsNeighbourOf($pieceOne, $pieceTwo)) {
@@ -48,7 +48,7 @@ class Board
         return false;
     }
 
-    function pieceIsNeighbourOf($pieceOne, $pieceTwo): bool {
+    public function pieceIsNeighbourOf($pieceOne, $pieceTwo): bool {
         {
             $pieceOne = explode(',', $pieceOne);
             $pieceTwo = explode(',', $pieceTwo);
@@ -59,7 +59,7 @@ class Board
         }
     }
 
-    function neighboursOfPieceAreTheSameColor($player, $pieceOne) {
+    public function neighboursOfPieceAreTheSameColor($player, $pieceOne) {
         foreach ($this->getBoardTiles() as $pieceTwo => $st) {
             //todo wat is st?
             if (!$st) {
