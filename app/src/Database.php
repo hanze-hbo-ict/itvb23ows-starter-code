@@ -30,7 +30,7 @@ class Database {
     }
 
     public static function selectAllMovesFromGame(int $gameId) {
-        //todo op een of andere manier selecteerd hij alle moves, ook van oude spellen?
+        //todo op een of andere manier selecteert hij alle moves, ook van oude spellen?
         // misschien dat er wat misgaat met de gameId
 
         $db = Database::initDatabase();
