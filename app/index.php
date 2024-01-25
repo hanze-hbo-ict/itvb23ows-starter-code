@@ -9,6 +9,7 @@
 
     session_start();
 
+    //todo dit eventueel naar board verplaatsen
     // Dit representeert de hexagon, de randen waar eventueel een tegel aankan.
     $GLOBALS['OFFSETS'] = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
 
@@ -23,19 +24,16 @@
     $playerOne = $game->getPlayerOne();
     $playerTwo = $game->getPlayerTwo();
 
-    //todo dit proberen te snappen en eventueel aanpassen ????? Zijn dit de mogelijke play posities oid?
-    $to = [];
+    $possiblePlayPositions = [];
     foreach ($GLOBALS['OFFSETS'] as $offset) {
-        //todo, blijkbaar zijn de boardTiles strings
-        foreach (array_keys($board->getBoardTiles()) as $pos) {
-            //todo pq2 is hier een string[], aanpassen
-            $pq2 = explode(',', $pos);
-            $to[] = ($offset[0] + $pq2[0]).','.($offset[1] + $pq2[1]);
+        foreach (array_keys($board->getBoardTiles()) as $position) {
+            $positionArray = explode(',', $position);
+            $possiblePlayPositions[] = ($offset[0] + $positionArray[0]).','.($offset[1] + $positionArray[1]);
         }
     }
-    $to = array_unique($to);
-    if (!count($to)) {
-        $to[] = '0,0';
+    $possiblePlayPositions = array_unique($possiblePlayPositions);
+    if (!count($possiblePlayPositions)) {
+        $possiblePlayPositions[] = '0,0';
     }
 ?>
 <!DOCTYPE html>
@@ -93,11 +91,11 @@
     <body>
         <div class="board">
             <?php
-            //todo dit proberen te snappen, hier worden de tegels op het bord weergegeven?
+            //todo dit proberen te snappen, hier worden de tegels op het bord weergegeven? Wat zijn de var hier?
                 $min_p = 1000;
                 $min_q = 1000;
-                foreach ($board->getBoardTiles() as $pos => $tile) {
-                    $pq = explode(',', $pos);
+                foreach ($board->getBoardTiles() as $position => $tile) {
+                    $pq = explode(',', $position); //pq = position als array
                     if ($pq[0] < $min_p) {
                         $min_p = $pq[0];
                     }
@@ -105,8 +103,8 @@
                         $min_q = $pq[1];
                     }
                 }
-                foreach (array_filter($board->getBoardTiles()) as $pos => $tile) {
-                    $pq = explode(',', $pos);
+                foreach (array_filter($board->getBoardTiles()) as $position => $tile) {
+                    $pq = explode(',', $position);
                     $pq[0];
                     $pq[1];
                     $h = count($tile);
@@ -166,8 +164,8 @@
             <select name="toPosition">
                 <?php
                     // deze to wordt bovenaan deze file geinstantieerd
-                    foreach ($to as $pos) {
-                        echo "<option value=\"$pos\">$pos</option>";
+                    foreach ($possiblePlayPositions as $position) {
+                        echo "<option value=\"$position\">$position</option>";
                     }
                 ?>
             </select>
@@ -177,15 +175,15 @@
         <form method="post" action="src/form_posts/move.php">
             <select name="fromPosition">
                 <?php
-                    foreach (array_keys($board->getBoardTiles()) as $pos) {
-                        echo "<option value=\"$pos\">$pos</option>";
+                    foreach (array_keys($board->getBoardTiles()) as $position) {
+                        echo "<option value=\"$position\">$position</option>";
                     }
                 ?>
             </select>
             <select name="toPosition">
                 <?php
-                    foreach ($to as $pos) {
-                        echo "<option value=\"$pos\">$pos</option>";
+                    foreach ($possiblePlayPositions as $position) {
+                        echo "<option value=\"$position\">$position</option>";
                     }
                 ?>
             </select>
@@ -208,7 +206,6 @@
         </strong>
         <ol>
             <?php
-                //todo wat is dit?
                 $gameId = $game->getGameId();
                 $result = Database::selectAllMovesFromGame($gameId);
                 while ($row = $result->fetch_array()) {
