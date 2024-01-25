@@ -119,6 +119,7 @@ class Moves
 
     public static function undoLastMove(Game $game): void
     {
+        //todo bugfix & werkt niet als de vorige beurt ongeldig was? Hij gaf iig een error
         $result = Database::selectLastMoveFromGame($game);
         $game->setLastMoveId($result[5]);
         $game->setState($result[6], $game);
@@ -129,9 +130,9 @@ class Moves
         return $tile ? count($tile) : 0;
     }
 
-    //todo check, Waar wordt dit uberhaupt voor gebruikt?
     private static function slide(Board $board, $from, $to): bool
     {
+        //todo herschrijven met logische var namen
         if ((!$board->pieceHasNeighbour($to)) || (!$board->pieceIsNeighbourOf($from, $to))){
             return false;
         }
