@@ -90,18 +90,13 @@ class Game
         }
     }
 
-    public function restart(Database $database): void {
+    public function restart(): void {
         $this->setBoard(new Board());
         $this->setPlayerOne(new Player(0));
         $this->setPlayerTwo(New Player(1));
         $this->setCurrentPlayer($this->getPlayerOne());
-        $database->addGameToDatabase($this);
-        $this->setLastMoveId($database->getLastMoveId());
+        Database::addGameToDatabase($this);
+        $this->setLastMoveId(Database::getLastMoveId());
     }
-
-    public function undoLastMove() {
-        //todo
-    }
-
 
 }
