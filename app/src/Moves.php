@@ -108,8 +108,8 @@ class Moves
             $queue = [array_shift($allTiles)];
             while ($queue) {
                 $next = explode(',', array_shift($queue));
-                foreach ($GLOBALS['OFFSETS'] as $position) {
-                    list($p, $q) = $position;
+                foreach ($board->getOffsets() as $offset) {
+                    list($p, $q) = $offset;
                     $p += $next[0];
                     $q += $next[1];
                     if (in_array("$p,$q", $allTiles)) {
@@ -174,7 +174,7 @@ class Moves
 
         $b = explode(',', $to);
         $common = [];
-        foreach ($GLOBALS['OFFSETS'] as $pq) {
+        foreach ($board->getOffsets() as $pq) {
             $p = $b[0] + $pq[0];
             $q = $b[1] + $pq[1];
             if ($board->pieceIsNeighbourOf($from, $p.",".$q)) {

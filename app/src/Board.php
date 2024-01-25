@@ -6,6 +6,16 @@ class Board
 {
     // Board bestaat alleen uit tiles, niet uit alle beschikbare plekken
     private array $boardTiles = [];
+    private array $Offsets = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
+
+    /**
+     * Dit representeert de hexagon, de randen waar eventueel een tegel aankan.
+     * @return array|array[]
+     */
+    public function getOffsets(): array
+    {
+        return $this->Offsets;
+    }
 
     /**
      * boardTile in boardTiles = [String position, [[int playerNumber, String $piece],[...],] ]

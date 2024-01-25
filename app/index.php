@@ -9,10 +9,6 @@
 
     session_start();
 
-    //todo dit eventueel naar board verplaatsen
-    // Dit representeert de hexagon, de randen waar eventueel een tegel aankan.
-    $GLOBALS['OFFSETS'] = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
-
     if (!isset($_SESSION['game'])) {
         $game = new Game();
     } else {
@@ -23,9 +19,10 @@
     $currentPlayer = $game->getCurrentPlayer();
     $playerOne = $game->getPlayerOne();
     $playerTwo = $game->getPlayerTwo();
+    $offsets = $board->getOffsets();
 
     $possiblePlayPositions = [];
-    foreach ($GLOBALS['OFFSETS'] as $offset) {
+    foreach ($offsets as $offset) {
         foreach (array_keys($board->getBoardTiles()) as $position) {
             $positionArray = explode(',', $position);
             $possiblePlayPositions[] = ($offset[0] + $positionArray[0]).','.($offset[1] + $positionArray[1]);
