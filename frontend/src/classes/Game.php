@@ -49,9 +49,37 @@ class Game
         return [];
     }
 
-    public function getHand(int | null $player = null): array {
+    /**
+     * Retrieves the positions on the board that are occupied by pieces of the current player.
+     *
+     * @return array Returns an array containing the positions on the board where pieces of the
+     * current player are placed.
+     */
+    public function getOccupiedPositions(): array {
         return [];
     }
+
+    /**
+     * Undoes the last move in the Hive game.
+     *
+     * @return void
+     */
+    public function undo(): void {
+
+    }
+
+    /**
+     * Moves a piece on the Hive game board from one position to another.
+     *
+     * @param string $fromPos The starting position of the piece.
+     * @param string $toPos   The target position to move the piece to.
+     *
+     * @return void
+     */
+    public function move(string $fromPos, string $toPos): void {
+
+    }
+
 
     /**
      * Restarts the game by resetting the board, player hands, and other relevant game state variables.
@@ -62,10 +90,24 @@ class Game
     }
 
     /**
+     * Get the current status of the Hive game.
+     *
+     * @return int The game status code:
+     *   - 0: Game in play
+     *   - 1: Player 0 wins
+     *   - 2: Player 1 wins
+     *   - 3: Draw
+     */
+    public function getGameStatus(): int {
+        return -1;
+    }
+
+    /**
      * Initializes the game state by retrieving necessary information from the session.
      * This method should be called to set up the game state at the beginning of each request.
      */
     public function initializeGame(): void {
+
     }
 
     /**
@@ -73,6 +115,6 @@ class Game
      * This method should be called to persist the game state in the session after each move.
      */
     public function updateSession(): void {
-
     }
+
 }
