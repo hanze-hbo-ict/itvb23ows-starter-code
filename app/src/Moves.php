@@ -82,7 +82,7 @@ class Moves
                     } elseif (isset($boardTiles[$toPosition]) && $tile[1] != "B") {
                         $_SESSION['error'] = 'Tile not empty';
                     } elseif ($tile[1] == "Q" || $tile[1] == "B") {
-                        if (!slide($boardTiles, $fromPosition, $toPosition)) {
+                        if (!Moves::slide($board, $fromPosition, $toPosition)) {
                             $_SESSION['error'] = 'Tile must slide';
                         }
                     }
@@ -124,16 +124,15 @@ class Moves
         $game->setState($result[6], $game);
     }
 
-
-    private function len($tile): int
+    private static function len($tile): int
     {
         return $tile ? count($tile) : 0;
     }
 
-    //todo check en herschrijf dit met gebruik van Board
-    function slide($board, $from, $to): bool
+    //todo check, Waar wordt dit uberhaupt voor gebruikt?
+    private static function slide(Board $board, $from, $to): bool
     {
-        if ((!hasNeighbour($to, $board)) || (!isNeighbour($from, $to))){
+        if ((!$board->pieceHasNeighbour($to)) || (!$board->pieceIsNeighbourOf($from, $to))){
             return false;
         }
 
@@ -142,14 +141,14 @@ class Moves
         foreach ($GLOBALS['OFFSETS'] as $pq) {
             $p = $b[0] + $pq[0];
             $q = $b[1] + $pq[1];
-            if (isNeighbour($from, $p.",".$q)) {
+            if ($board->pieceIsNeighbourOf($from, $p.",".$q)) {
                 $common[] = $p.",".$q;
             }
         }
         if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
             return false;
         }
-        return min($this->len($board[$common[0]]), $this->len($board[$common[1]])) <= max($this->len($board[$from]), $this->len($board[$to]));
+        return min(Moves::len($board[$common[0]]), Moves::len($board[$common[1]])) <= max(Moves::len($board[$from]), Moves::len($board[$to]));
     }
 
 
