@@ -2,6 +2,7 @@
 
 namespace Classes;
 
+use Exception;
 use mysqli;
 
 class DatabaseHandler
@@ -82,6 +83,41 @@ class DatabaseHandler
      */
     public function addMove(int $gameId, string $piece, string $toPos, int | null $prevId, string $state): int {
         return $this->doAction($gameId, "play", $piece, $toPos, $prevId, $state);
+    }
+
+    /**
+     * Undoes a specific move in the Hive game based on the provided move ID.
+     *
+     * @param int $moveId The identifier of the move to be undone.
+     *
+     * @return string The serialized state representing the game state before the move.
+     *
+     * @throws Exception If the undo operation fails.
+     */
+    public function undoMove(int $moveId): string {
+        $db = $this->getConnection();
+
+        // Prepare the SELECT statement
+        $selectCmd = "SELECT * FROM moves WHERE id = ?";
+        $stmt = $db->prepare($selectCmd);
+        $stmt->bind_param("i", $moveId);
+
+        // Execute the SELECT statement
+        if ($stmt->execute()) {
+            $result = $stmt->get_result();
+
+            $data = $result->fetch_assoc();
+
+            $result->close();
+
+            $deleteCmd = "DELETE FROM moves WHERE id = ?";
+            $deleteStmt = $db->prepare($deleteCmd);
+            $deleteStmt->bind_param("i", $moveId);
+            $deleteStmt->execute();
+
+            return $data["state"];
+        }
+        throw new Exception("Cold not undo move");
     }
 
 

@@ -327,7 +327,16 @@ class Game
      * @return void
      */
     public function undo(): void {
+        if ($this->prevMoveId == null) {
+            $this->setError("You have not yet played a move.");
+            return;
+        }
 
+        try {
+            $this->resetPrevState($this->databaseHandler->undoMove($this->prevMoveId));
+        } catch (\Exception $exception) {
+            $this->setError($exception->getMessage());
+        }
     }
 
     /**
@@ -573,6 +582,18 @@ class Game
     private function copyArray(array $array): array {
         return array_merge([], $array);
     }
+
+    /**
+     * Resets the game state to a previous state.
+     *
+     * @param string $state The serialized representation of the previous game state.
+     *
+     * @return void
+     */
+    private function resetPrevState(string $state): void {
+        [$this->hand, $this->board, $this->player, $this->prevMoveId, $this->turnCounter] = unserialize($state);
+    }
+
 
     /**
      * Returns the serialized state of the game.

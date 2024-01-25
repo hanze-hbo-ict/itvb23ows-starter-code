@@ -13,14 +13,8 @@ if (!isset($_SESSION['board'])) {
 
 $hiveGame->executeAction();
 
+$board = $_SESSION['board'];
 
-    include_once 'util.php';
-
-    if (!isset($_SESSION['board'])) {
-        header('Location: restart.php');
-        exit(0);
-    }
-    $board = $_SESSION['board'];
     $player = $_SESSION['player'];
     $hand = $_SESSION['hand'];
 
@@ -176,6 +170,9 @@ $hiveGame->executeAction();
                 <button type="submit" name="action" value="pass">Pass</button>
             </form>
         <?php } ?>
+        <form method="post">
+            <button type="submit" name="action" value="undo">Undo</button>
+        </form>
         <form method="post">
             <button type="submit" name="action" value="restart">Restart</button>
         </form>
