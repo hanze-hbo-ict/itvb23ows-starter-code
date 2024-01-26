@@ -170,7 +170,6 @@ use app\Moves;
             </select>
             <select name="toPosition">
                 <?php
-                    //todo get only possible move positions ? Is dat anders dan play positions?
                     foreach ($possiblePlayPositions as $position) {
                         echo "<option value=\"$position\">$position</option>";
                     }
