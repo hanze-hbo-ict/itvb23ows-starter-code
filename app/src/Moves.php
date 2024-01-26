@@ -36,7 +36,10 @@ class Moves
 
     public static function movePiece(String $fromPosition, String $toPosition, Game $game): void
     {
-        // todo checken of stapelen werkt
+        //todo checken of stapelen werkt
+        // errors tonen opeens niet meer, checken
+        // although, errors moeten eigenlijk sowieso anders
+        // nja, geen prio
 
         $player = $game->getCurrentPlayer();
         $board = $game->getBoard();
@@ -169,7 +172,7 @@ class Moves
         return true;
     }
 
-    private static function tileMustSlide($tile, $board, $fromPosition, $toPosition)
+    private static function tileMustSlide($tile, $board, $fromPosition, $toPosition): bool
     {
         if ($tile[1] == "Q" || $tile[1] == "B") {
             if (!self::slide($board, $fromPosition, $toPosition)) {
