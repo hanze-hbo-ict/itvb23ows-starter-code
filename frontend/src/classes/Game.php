@@ -142,8 +142,8 @@ class Game
         [$x2, $y2] = explode(",", $b);
 
         return ($x1 == $x2 && abs($y1 - $y2) == 1) ||
-            (($y1 == $y2 && abs($x1 - $x2) == 1)) ||
-            (((int)$x1 + (int)$x2 == (int)$y1 + (int)$y2));
+            ($y1 == $y2 && abs($x1 - $x2) == 1) ||
+            ((int)$x1 + (int)$x2 == (int)$y1 + (int)$y2);
     }
 
     /**
@@ -292,7 +292,7 @@ class Game
             }
         }
 
-        return count($validMoves) > 0 ? array_unique($validMoves) : ["0,0"];
+        return !empty($validMoves) ? array_unique($validMoves) : ["0,0"];
     }
 
     /**
@@ -488,6 +488,8 @@ class Game
             case "pass":
                 $this->pass();
                 break;
+            default:
+                $this->setError("AI played an unknown move.");
         }
     }
 

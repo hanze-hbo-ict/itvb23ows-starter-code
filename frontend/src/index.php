@@ -131,5 +131,4 @@ $playerTwo = $hiveGame->getHand(1);
         ?>
     </strong>
 </body>
-
 </html>
