@@ -36,16 +36,16 @@ class MoveController
             $_SESSION['error'] = "Tile is not owned by player";
         } elseif ($this->hand['Q']) {
             $_SESSION['error'] = "Queen bee is not played";
-        } elseif (!$this->board->hasNeighBour($this->to, $thisBoard)) {
+        } elseif (!$this->board->hasNeighBour($this->to, $board)) {
             $_SESSION['error'] = "Move would split hive";
         }else {
-            if (count($thisBoard[$this->from]) > 1){
-                $tile = array_pop($thisBoard[$this->from]);}
+            if (count($board[$this->from]) > 1){
+                $tile = array_pop($board[$this->from]);}
             else{
-                $tile = array_pop($thisBoard[$this->from]);
-                unset($thisBoard[$this->from]);
+                $tile = array_pop($board[$this->from]);
+                unset($board[$this->from]);
             }
-            $all = $this->getSplitTiles($thisBoard);
+            $all = $this->getSplitTiles($board);
                 if ($all) {
                     $_SESSION['error'] = "Move would split hive";
                 } else {
@@ -56,6 +56,10 @@ class MoveController
                     } elseif ($tile[1] == "Q" || $tile[1] == "B") {
                         if (!$this->board->slide($this->from, $this->to, $this->board->getBoard())) {
                             $_SESSION['error'] = 'Tile must slide';
+                        }
+                    } elseif ($tile[1] == "G"){
+                        if (!$this->validateGrasshopperMove($this->board->getBoard())){
+                            $_SESSION['error'] = 'Unvalid move for Grassshopper';
                         }
                     }
                 }
