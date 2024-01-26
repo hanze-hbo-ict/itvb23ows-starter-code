@@ -174,6 +174,9 @@ $board = $_SESSION['board'];
             <button type="submit" name="action" value="undo">Undo</button>
         </form>
         <form method="post">
+            <button type="submit" name="action" value="ai_play">AI Play</button>
+        </form>
+        <form method="post">
             <button type="submit" name="action" value="restart">Restart</button>
         </form>
         <strong>
