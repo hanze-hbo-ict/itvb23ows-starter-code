@@ -59,7 +59,8 @@ class Board
         }
     }
 
-    public function neighboursOfPieceAreTheSameColor($player, $pieceOne) {
+    public function neighboursOfPieceAreTheSameColor($player, $pieceOne): bool
+    {
         foreach ($this->getBoardTiles() as $pieceTwo => $st) {
             //todo wat is st?
             if (!$st) {
@@ -73,5 +74,7 @@ class Board
         }
         return true;
     }
+
+
 
 }
