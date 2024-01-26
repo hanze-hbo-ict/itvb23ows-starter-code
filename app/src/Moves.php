@@ -11,7 +11,7 @@ class Moves
         $hand = $player->getHand();
         $playerNumber = $player->getPlayerNumber();
 
-        if (Rules::pieceIsLegalToPlay($piece, $toPosition, $playerNumber, $hand, $board)) {
+        if (Rules::positionIsLegalToPlay($toPosition, $playerNumber, $hand, $board) && !Rules::tileNotInHand($hand, $piece)) {
             $board->addPiece($piece, $playerNumber, $toPosition);
             $player->removePieceFromHand($piece);
             $game->switchTurn();
@@ -36,7 +36,7 @@ class Moves
 
         $tile = array_pop($boardTiles[$fromPosition]);
         //check if move is legal
-        if (Rules::pieceIsLegalToMove($board, $player, $fromPosition, $toPosition)) {
+        if (Rules::positionIsLegalToMove($board, $player, $fromPosition, $toPosition)) {
             if (isset($boardTiles[$toPosition])) {
                 array_push($boardTiles[$toPosition], $tile);
             } else {
@@ -55,8 +55,6 @@ class Moves
         //todo weet niet zeker of dit klopt, de boardTiles moeten iig veranderd worden naar de nieuwe situatie
         $board->setBoardTiles($boardTiles);
     }
-
-
 
     public static function pass(Game $game): void
     {

@@ -3,8 +3,9 @@
 
     use app\Database;
     use app\Game;
+use app\Moves;
 
-    //todo eventueel post actions op een andere manier?
+//todo eventueel post actions op een andere manier?
 
     session_start();
 
@@ -20,17 +21,6 @@
     $playerTwo = $game->getPlayerTwo();
     $offsets = $board->getOffsets();
 
-    $possiblePlayPositions = [];
-    foreach ($offsets as $offset) {
-        foreach (array_keys($board->getBoardTiles()) as $position) {
-            $positionArray = explode(',', $position);
-            $possiblePlayPositions[] = ($offset[0] + $positionArray[0]).','.($offset[1] + $positionArray[1]);
-        }
-    }
-    $possiblePlayPositions = array_unique($possiblePlayPositions);
-    if (!count($possiblePlayPositions)) {
-        $possiblePlayPositions[] = '0,0';
-    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -160,8 +150,8 @@
             </select>
             <select name="toPosition">
                 <?php
-                //todo dropdown bug fix
-                    // deze to wordt bovenaan deze file geinstantieerd
+                    //todo dropdown bug fix
+                    $possiblePlayPositions = $board->getPossiblePlayPositions($currentPlayer->getPlayerNumber(), $currentPlayer->getHand());
                     foreach ($possiblePlayPositions as $position) {
                         echo "<option value=\"$position\">$position</option>";
                     }
