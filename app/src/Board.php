@@ -80,6 +80,21 @@ class Board
         return true;
     }
 
+    public function getTilesFromPlayer($playerNumber): array
+    {
+        $boardTiles = $this->getBoardTiles();
+        $playerBoardTiles = [];
+
+        foreach ($boardTiles as $position => $tiles) {
+            foreach ($tiles as $tile) {
+                if ($tile[0] == $playerNumber) {
+                    $playerBoardTiles[$position] = $tiles;
+                }
+            }
+        }
+        return $playerBoardTiles;
+    }
+
     public function getPossiblePlayPositions($playerNumber, $hand): array {
         $offsets = $this->getOffsets();
         $boardTiles = $this->getBoardTiles();

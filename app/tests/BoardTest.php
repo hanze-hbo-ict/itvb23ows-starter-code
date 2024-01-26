@@ -33,4 +33,15 @@ class BoardTest extends PHPUnit\Framework\TestCase
         self::assertEquals($expectedResult, $possiblePlaypositions);
     }
 
+    public function testGivenPlayerZeroWhenGetTilesFromPlayerReturnOnlyTilesFromPlayerZero() {
+        $boardTiles = ['0,0' => [[0, "Q"]], '0,1' => [[1, "B"]], '0,-1' => [[0, "B"]],'0,2' => [[1, "S"]]];
+        $board = new Board($boardTiles);
+
+        $playerZeroTiles = $board->getTilesFromPlayer(0);
+
+        $expectedResult = ['0,0' => [[0, "Q"]], '0,-1' => [[0, "B"]]];
+        self::assertEquals($expectedResult, $playerZeroTiles);
+    }
+
+
 }

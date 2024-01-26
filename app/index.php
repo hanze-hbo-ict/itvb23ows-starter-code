@@ -150,7 +150,7 @@ use app\Moves;
             </select>
             <select name="toPosition">
                 <?php
-                    //todo dropdown bug fix
+                    // dropdown possible play positions
                     $possiblePlayPositions = $board->getPossiblePlayPositions($currentPlayer->getPlayerNumber(), $currentPlayer->getHand());
                     foreach ($possiblePlayPositions as $position) {
                         echo "<option value=\"$position\">$position</option>";
@@ -163,13 +163,14 @@ use app\Moves;
         <form method="post" action="src/formPosts/move.php">
             <select name="fromPosition">
                 <?php
-                    foreach (array_keys($board->getBoardTiles()) as $position) {
+                    foreach (array_keys($board->getTilesFromPlayer($currentPlayer->getPlayerNumber())) as $position) {
                         echo "<option value=\"$position\">$position</option>";
                     }
                 ?>
             </select>
             <select name="toPosition">
                 <?php
+                    //todo get only possible move positions ? Is dat anders dan play positions?
                     foreach ($possiblePlayPositions as $position) {
                         echo "<option value=\"$position\">$position</option>";
                     }
