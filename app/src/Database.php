@@ -4,11 +4,13 @@ use mysqli;
 
 class Database {
 
-    public static function addMoveToDatabase(Game $game, String $type, String $toPosition = '', $fromPosition = ''): void
+    public static function addMoveToDatabase(
+        Game $game, String $type, String $toPosition = '', $fromPosition = ''
+    ): void
     {
         $db = Database::initDatabase();
         if ($db->connect_error) {
-            die("Connection failed: " . $db->connect_error);
+            die($db->connect_error);
         }
         $stmt = $db->prepare('insert into moves
             (game_id, type, move_from, move_to, previous_id, state)
@@ -23,7 +25,7 @@ class Database {
     public static function addGameToDatabase(Game $game): void {
         $db = Database::initDatabase();
         if ($db->connect_error) {
-            die("Connection failed: " . $db->connect_error);
+            die($db->connect_error);
         }
         $db->prepare('INSERT INTO games VALUES ()')->execute();
         $game->setGameId(Database::initDatabase()->insert_id);
@@ -35,7 +37,7 @@ class Database {
 
         $db = Database::initDatabase();
         if ($db->connect_error) {
-            die("Connection failed: " . $db->connect_error);
+            die($db->connect_error);
         }
         $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$gameId);
         $stmt->execute();
@@ -45,7 +47,7 @@ class Database {
     public static function selectLastMoveFromGame(Game $game) {
         $db = Database::initDatabase();
         if ($db->connect_error) {
-            die("Connection failed: " . $db->connect_error);
+            die($db->connect_error);
         }
         $lastMoveId = $game->getLastMoveId();
         $stmt = $db->prepare('SELECT * FROM moves WHERE id = '.$lastMoveId);
@@ -56,7 +58,7 @@ class Database {
     public static function getLastMoveId() {
         $db = Database::initDatabase();
         if ($db->connect_error) {
-            die("Connection failed: " . $db->connect_error);
+            die($db->connect_error);
         }
         return $db->insert_id;
     }

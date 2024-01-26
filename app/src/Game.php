@@ -92,7 +92,7 @@ class Game
     public function restart(): void {
         $this->setBoard(new Board());
         $this->setPlayerOne(new Player(0));
-        $this->setPlayerTwo(New Player(1));
+        $this->setPlayerTwo(new Player(1));
         $this->setCurrentPlayer($this->getPlayerOne());
         Database::addGameToDatabase($this);
         $this->setLastMoveId(Database::getLastMoveId());
@@ -122,6 +122,5 @@ class Game
         $this->getBoard()->setBoardTiles($board);
         $this->switchTurn();
     }
-
 
 }

@@ -6,7 +6,7 @@ class Board
 {
     // Board bestaat alleen uit tiles, niet uit alle beschikbare plekken
     private array $boardTiles = [];
-    private array $Offsets = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
+    private array $offsets = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
 
     /**
      * Dit representeert de hexagon, de randen waar eventueel een tegel aankan.
@@ -14,7 +14,7 @@ class Board
      */
     public function getOffsets(): array
     {
-        return $this->Offsets;
+        return $this->offsets;
     }
 
     /**

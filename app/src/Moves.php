@@ -72,24 +72,39 @@ class Moves
 
         unset($_SESSION['error']);
 
-        return (
-            self::thereIsATileToMoveLegally($boardTiles, $hand, $playerNumber, $fromPosition) &&
+        return self::thereIsATileToMoveLegally($boardTiles, $hand, $playerNumber, $fromPosition) &&
             self::tileMoveWontSplitHive($board, $fromPosition) &&
-            self::tileToMoveCanMove($board, $fromPosition, $toPosition)
-        );
+            self::tileToMoveCanMove($board, $fromPosition, $toPosition);
     }
 
     private static function thereIsATileToMoveLegally($boardTiles, $hand, $playerNumber, $fromPosition): bool
     {
-        if (!isset($boardTiles[$fromPosition])) {
+        return !(self::boardPositionIsEmpty($boardTiles, $fromPosition) ||
+            self::tileIsNotOwnedByPlayer($boardTiles, $fromPosition, $playerNumber) ||
+            self::handContainsQueen($hand));
+    }
+
+    private static function boardPositionIsEmpty($boardTiles, $position): bool
+    {
+        if (!isset($boardTiles[$position])) {
             $_SESSION['error'] = 'Board position is empty';
             return false;
         }
-        elseif ($boardTiles[$fromPosition][count($boardTiles[$fromPosition])-1][0] != $playerNumber) {
+        return true;
+    }
+
+    private static function tileIsNotOwnedByPlayer($boardTiles, $position, $playerNumber): bool
+    {
+        if ($boardTiles[$position][count($boardTiles[$position])-1][0] != $playerNumber) {
             $_SESSION['error'] = "Tile is not owned by player";
             return false;
         }
-        elseif ($hand['Q']) {
+        return true;
+    }
+
+    private static function handContainsQueen($hand): bool
+    {
+        if ($hand['Q']) {
             $_SESSION['error'] = "Queen bee is not played";
             return false;
         }
@@ -130,13 +145,33 @@ class Moves
     {
         $boardTiles = $board->getBoardTiles();
         $tile = array_pop($boardTiles[$fromPosition]);
+
+        return !(self::positionsAreTheSame($fromPosition, $toPosition)||
+            self::tileIsNotEmpty($boardTiles, $toPosition, $tile) ||
+            self::tileMustSlide($tile, $board, $fromPosition, $toPosition));
+    }
+
+    private static function positionsAreTheSame($fromPosition, $toPosition): bool
+    {
         if ($fromPosition == $toPosition) {
             $_SESSION['error'] = 'Tile must move';
             return false;
-        } elseif (isset($boardTiles[$toPosition]) && $tile[1] != "B") {
+        }
+        return true;
+    }
+
+    private static function tileIsNotEmpty($boardTiles, $toPosition, $tile): bool
+    {
+        if (isset($boardTiles[$toPosition]) && $tile[1] != "B"){
             $_SESSION['error'] = 'Tile not empty';
             return false;
-        } elseif ($tile[1] == "Q" || $tile[1] == "B") {
+        }
+        return true;
+    }
+
+    private static function tileMustSlide($tile, $board, $fromPosition, $toPosition)
+    {
+        if ($tile[1] == "Q" || $tile[1] == "B") {
             if (!self::slide($board, $fromPosition, $toPosition)) {
                 $_SESSION['error'] = 'Tile must slide';
                 return false;
@@ -184,9 +219,8 @@ class Moves
         if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
             return false;
         }
-        return min(self::len($board[$common[0]]), self::len($board[$common[1]])) <= max(self::len($board[$from]), self::len($board[$to]));
+        return min(self::len($board[$common[0]]), self::len($board[$common[1]]))
+            <= max(self::len($board[$from]), self::len($board[$to]));
     }
-
-
 
 }
