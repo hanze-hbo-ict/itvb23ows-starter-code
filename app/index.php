@@ -1,6 +1,5 @@
 <?php
-    require_once(__DIR__ . "/src/Database.php");
-    require_once(__DIR__ . "/src/Game.php");
+    require_once 'vendor/autoload.php';
 
     use app\Database;
     use app\Game;
@@ -150,7 +149,7 @@
             } ?>
         </div>
 
-        <form method="post" action="src/form_posts/play.php">
+        <form method="post" action="src/formPosts/play.php">
             <select name="piece">
                 <?php
                     foreach ($game->getCurrentPlayer()->getHand() as $tile => $ct) {
@@ -169,7 +168,7 @@
             <input type="submit" value="Play">
         </form>
 
-        <form method="post" action="src/form_posts/move.php">
+        <form method="post" action="src/formPosts/move.php">
             <select name="fromPosition">
                 <?php
                     foreach (array_keys($board->getBoardTiles()) as $position) {
@@ -187,11 +186,11 @@
             <input type="submit" value="Move">
         </form>
 
-        <form method="post" action="src/form_posts/pass.php">
+        <form method="post" action="src/formPosts/pass.php">
             <input type="submit" value="Pass">
         </form>
 
-        <form method="post" action="src/form_posts/restart.php">
+        <form method="post" action="src/formPosts/restart.php">
             <input type="submit" value="Restart">
         </form>
 
@@ -211,7 +210,7 @@
             ?>
         </ol>
 
-        <form method="post" action="src/form_posts/undo.php">
+        <form method="post" action="src/formPosts/undo.php">
             <input type="submit" value="Undo">
         </form>
 

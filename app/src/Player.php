@@ -2,10 +2,6 @@
 
 namespace app;
 
-require_once(__DIR__ . "/Database.php");
-require_once(__DIR__ . "/Board.php");
-require_once(__DIR__ . "/Player.php");
-
 class Player
 {
     private array $hand;
