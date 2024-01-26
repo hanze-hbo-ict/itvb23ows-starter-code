@@ -174,11 +174,9 @@ class Moves
 
     private static function tileMustSlide($tile, $board, $fromPosition, $toPosition): bool
     {
-        if ($tile[1] == "Q" || $tile[1] == "B") {
-            if (!self::slide($board, $fromPosition, $toPosition)) {
-                $_SESSION['error'] = 'Tile must slide';
-                return false;
-            }
+        if (($tile[1] == "Q" || $tile[1] == "B") && !self::slide($board, $fromPosition, $toPosition)) {
+            $_SESSION['error'] = 'Tile must slide';
+            return false;
         }
         return true;
     }
