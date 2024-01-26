@@ -7,13 +7,11 @@ class Rules
     public static function positionIsLegalToPlay(String $toPosition, int $playerNumber, array $hand, Board $board): bool
     {
         $boardTiles = $board->getBoardTiles();
-
-        return !(
-            self::boardPositionIsNotEmpty($boardTiles, $toPosition) ||
-            self::boardPositionHasNoNeighbour($board, $boardTiles, $toPosition) ||
-            self::boardPositionHasOpposingNeighbour($board, $hand, $playerNumber, $toPosition) ||
-            self::queenBeeMustBePlayedBeforeTurnFour($hand)
-        );
+        return
+            self::boardPositionIsEmpty($boardTiles, $toPosition) &&
+            self::boardPositionHasANeighbour($board, $boardTiles, $toPosition) &&
+            self::boardPositionHasNoOpposingNeighbour($board, $hand, $playerNumber, $toPosition) &&
+            self::queenBeeIsPlayedBeforeTurnFour($hand);
     }
 
     public static function positionIsLegalToMove(Board $board, Player $player, String $fromPosition, String $toPosition): bool
@@ -27,150 +25,189 @@ class Rules
         return self::thereIsATileToMoveLegally($boardTiles, $hand, $playerNumber, $fromPosition) &&
             self::tileMoveWontSplitHive($board, $fromPosition) &&
             self::tileToMoveCanMove($board, $fromPosition, $toPosition);
+
     }
 
     public static function tileNotInHand($hand, $piece): bool
     {
-        if (!$hand[$piece]) {
-            $_SESSION['error'] = "Player does not have tile";
-            return true;
+        try {
+            if (!$hand[$piece]) {
+                throw new RulesException("Player does not have tile in hand");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
         }
         return false;
-    }
-
-    private static function boardPositionIsNotEmpty($boardTiles, $position): bool
-    {
-        if (isset($boardTiles[$position])) {
-            $_SESSION['error'] = 'Board position is not empty';
-            return true;
-        }
-        return false;
-    }
-
-    private static function boardPositionHasNoNeighbour(Board $board, $boardTiles, $position): bool
-    {
-        if (count($boardTiles) && !$board->pieceHasNeighbour($position)) {
-            $_SESSION['error'] = "board position has no neighbour";
-            return true;
-        }
-        return false;
-    }
-
-    private static function boardPositionHasOpposingNeighbour(Board $board, $hand, $playerNumber, $position): bool
-    {
-        if (array_sum($hand) < 11 && !$board->neighboursOfPieceAreTheSameColor($playerNumber, $position)) {
-            $_SESSION['error'] = "Board position has opposing neighbour";
-            return true;
-        }
-        return false;
-    }
-
-    private static function queenBeeMustBePlayedBeforeTurnFour($hand): bool
-    {
-        if (array_sum($hand) <= 8 && array_key_exists("Q", $hand)) {
-            $_SESSION['error'] = 'Must play queen bee';
-            return true;
-        }
-        return false;
-    }
-
-    private static function thereIsATileToMoveLegally($boardTiles, $hand, $playerNumber, $fromPosition): bool
-    {
-        return !(self::boardPositionIsEmpty($boardTiles, $fromPosition) ||
-            self::tileIsNotOwnedByPlayer($boardTiles, $fromPosition, $playerNumber) ||
-            self::handContainsQueen($hand));
     }
 
     private static function boardPositionIsEmpty($boardTiles, $position): bool
     {
-        if (!isset($boardTiles[$position])) {
-            $_SESSION['error'] = 'Board position is empty';
-            return false;
+        try{
+            if (isset($boardTiles[$position])) {
+                throw new RulesException("Board position is not empty");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
         }
         return true;
     }
 
-    private static function tileIsNotOwnedByPlayer($boardTiles, $position, $playerNumber): bool
+    private static function boardPositionHasANeighbour(Board $board, $boardTiles, $position): bool
     {
-        if ($boardTiles[$position][count($boardTiles[$position])-1][0] != $playerNumber) {
-            $_SESSION['error'] = "Tile is not owned by player";
-            return false;
+        try{
+            if (count($boardTiles) && !$board->pieceHasNeighbour($position)) {
+                throw new RulesException("Board position has no neighbour");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
         }
         return true;
     }
 
-    private static function handContainsQueen($hand): bool
+    private static function boardPositionHasNoOpposingNeighbour(Board $board, $hand, $playerNumber, $position): bool
     {
-        if ($hand['Q']) {
-            $_SESSION['error'] = "Queen bee is not played";
-            return false;
+        try{
+            if (array_sum($hand) < 11 && !$board->neighboursOfPieceAreTheSameColor($playerNumber, $position)) {
+                throw new RulesException("Board position has opposing neighbour");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
         }
         return true;
     }
 
-    private static function tileMoveWontSplitHive(Board $board, $toPosition): bool
+    private static function queenBeeIsPlayedBeforeTurnFour($hand): bool
+    {
+        try {
+            if (array_sum($hand) <= 8 && array_key_exists("Q", $hand)) {
+                throw new RulesException("Must play queen bee before turn four");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
+        }
+        return true;
+    }
+
+    public static function thereIsATileToMoveLegally($boardTiles, $hand, $playerNumber, $fromPosition): bool
+    {
+        return self::boardPositionIsNotEmpty($boardTiles, $fromPosition) &&
+            self::tileIsOwnedByPlayer($boardTiles, $fromPosition, $playerNumber) &&
+            self::handDoesNotContainQueen($hand);
+    }
+
+    public static function boardPositionIsNotEmpty($boardTiles, $position): bool
+    {
+        try {
+            if (!isset($boardTiles[$position])) {
+                throw new RulesException("Board position is empty");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
+        }
+        return true;
+    }
+
+    public static function tileIsOwnedByPlayer($boardTiles, $position, $playerNumber): bool
+    {
+        try {
+            if ($boardTiles[$position][count($boardTiles[$position])-1][0] != $playerNumber) {
+                throw new RulesException("Tile is not owned by player");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
+        }
+        return true;
+    }
+
+    public static function handDoesNotContainQueen($hand): bool
+    {
+        try {
+            if ($hand['Q']) {
+                throw new RulesException("Queen bee is not played");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
+        }
+        return true;
+    }
+
+    public static function tileMoveWontSplitHive(Board $board, $toPosition): bool
     {
         // todo var namen anders (begrijpen wat ermee bedoeld wordt)
         $boardTiles = $board->getBoardTiles();
-        if (!$board->pieceHasNeighbour($toPosition)) {
-            $_SESSION['error'] = "Move would split hive";
-            return false;
-        } else {
-            $allTiles = array_keys($boardTiles);
-            $queue = [array_shift($allTiles)];
-            while ($queue) {
-                $next = explode(',', array_shift($queue));
-                foreach ($board->getOffsets() as $offset) {
-                    list($p, $q) = $offset;
-                    $p += $next[0];
-                    $q += $next[1];
-                    if (in_array("$p,$q", $allTiles)) {
-                        $queue[] = "$p,$q";
-                        $allTiles = array_diff($allTiles, ["$p,$q"]);
+        try{
+            if (!$board->pieceHasNeighbour($toPosition)) {
+                throw new RulesException("Move would split hive");
+            } else {
+                $allTiles = array_keys($boardTiles);
+                $queue = [array_shift($allTiles)];
+                while ($queue) {
+                    $next = explode(',', array_shift($queue));
+                    foreach ($board->getOffsets() as $offset) {
+                        list($p, $q) = $offset;
+                        $p += $next[0];
+                        $q += $next[1];
+                        if (in_array("$p,$q", $allTiles)) {
+                            $queue[] = "$p,$q";
+                            $allTiles = array_diff($allTiles, ["$p,$q"]);
+                        }
                     }
                 }
+                if ($allTiles) {
+                    throw new RulesException("Move would split hive");
+                }
             }
-            if ($allTiles) {
-                $_SESSION['error'] = "Move would split hive";
-                return false;
-            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
         }
         return true;
     }
 
-    private static function tileToMoveCanMove(Board $board, $fromPosition, $toPosition): bool
+    public static function tileToMoveCanMove(Board $board, $fromPosition, $toPosition): bool
     {
         $boardTiles = $board->getBoardTiles();
         $tile = array_pop($boardTiles[$fromPosition]);
 
-        return !(self::positionsAreTheSame($fromPosition, $toPosition)||
-            self::tileIsNotEmpty($boardTiles, $toPosition, $tile) ||
-            self::tileMustSlide($tile, $board, $fromPosition, $toPosition));
+        return self::positionsAreNotTheSame($fromPosition, $toPosition) &&
+            self::destinationTileIsEmpty($boardTiles, $toPosition, $tile) &&
+            self::tileIsAbleToSlide($tile, $board, $fromPosition, $toPosition);
     }
 
-    private static function positionsAreTheSame($fromPosition, $toPosition): bool
+
+    private static function positionsAreNotTheSame($fromPosition, $toPosition): bool
     {
-        if ($fromPosition == $toPosition) {
-            $_SESSION['error'] = 'Tile must move';
-            return false;
+        try {
+            if ($fromPosition == $toPosition) {
+                throw new RulesException("Tile must move");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
         }
         return true;
     }
 
-    private static function tileIsNotEmpty($boardTiles, $toPosition, $tile): bool
+    private static function destinationTileIsEmpty($boardTiles, $toPosition, $tile): bool
     {
-        if (isset($boardTiles[$toPosition]) && $tile[1] != "B"){
-            $_SESSION['error'] = 'Tile not empty';
-            return false;
+        try {
+            //todo tile[1] = B? check
+            // tile needs to be like [0, "B"]
+            if (isset($boardTiles[$toPosition]) && $tile[1] != "B"){
+                throw new RulesException("Tile is not empty");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
         }
         return true;
     }
 
-    private static function tileMustSlide($tile, $board, $fromPosition, $toPosition): bool
+    private static function tileIsAbleToSlide($tile, $board, $fromPosition, $toPosition): bool
     {
-        if (($tile[1] == "Q" || $tile[1] == "B") && !self::slide($board, $fromPosition, $toPosition)) {
-            $_SESSION['error'] = 'Tile must slide';
-            return false;
+        try{
+            if (($tile[1] == "Q" || $tile[1] == "B") && !self::slide($board, $fromPosition, $toPosition)) {
+                throw new RulesException("Tile is not able to slide");
+            }
+        } catch(RulesException $e) {
+            echo $e->getMessage();
         }
         return true;
     }
@@ -180,8 +217,9 @@ class Rules
         return $tile ? count($tile) : 0;
     }
 
-    private static function slide(Board $board, $from, $to): bool
+    public static function slide(Board $board, $from, $to): bool
     {
+        $boardTiles = $board->getBoardTiles();
         //todo herschrijven met logische var namen
         if ((!$board->pieceHasNeighbour($to)) || (!$board->pieceIsNeighbourOf($from, $to))){
             return false;
@@ -196,11 +234,12 @@ class Rules
                 $common[] = $p.",".$q;
             }
         }
-        if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) {
+        if (!$boardTiles[$common[0]] && !$boardTiles[$common[1]]
+            && !$boardTiles[$from] && !$boardTiles[$to]) {
             return false;
         }
-        return min(self::len($board[$common[0]]), self::len($board[$common[1]]))
-            <= max(self::len($board[$from]), self::len($board[$to]));
+        return min(self::len($boardTiles[$common[0]]), self::len($boardTiles[$common[1]]))
+            <= max(self::len($boardTiles[$from]), self::len($boardTiles[$to]));
     }
 
 }

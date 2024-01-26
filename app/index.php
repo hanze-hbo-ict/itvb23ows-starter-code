@@ -194,6 +194,7 @@ use app\Moves;
         </strong>
         <ol>
             <?php
+                //todo bugfix, hij select alle moves van alle games
                 $gameId = $game->getGameId();
                 $result = Database::selectAllMovesFromGame($gameId);
                 while ($row = $result->fetch_array()) {
