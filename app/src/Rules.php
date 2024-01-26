@@ -48,7 +48,7 @@ class Rules
         return false;
     }
 
-    private static function boardPositionHasNoNeighbour($board, $boardTiles, $position): bool
+    private static function boardPositionHasNoNeighbour(Board $board, $boardTiles, $position): bool
     {
         if (count($boardTiles) && !$board->pieceHasNeighbour($position)) {
             $_SESSION['error'] = "board position has no neighbour";
@@ -57,7 +57,7 @@ class Rules
         return false;
     }
 
-    private static function boardPositionHasOpposingNeighbour($board, $hand, $playerNumber, $position): bool
+    private static function boardPositionHasOpposingNeighbour(Board $board, $hand, $playerNumber, $position): bool
     {
         if (array_sum($hand) < 11 && !$board->neighboursOfPieceAreTheSameColor($playerNumber, $position)) {
             $_SESSION['error'] = "Board position has opposing neighbour";
