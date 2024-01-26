@@ -152,13 +152,15 @@
         <form method="post" action="src/formPosts/play.php">
             <select name="piece">
                 <?php
-                    foreach ($game->getCurrentPlayer()->getHand() as $tile => $ct) {
-                        echo "<option value=\"$tile\">$tile</option>";
+                    // dropdown player pieces
+                    foreach ($game->getCurrentPlayer()->getHand() as $tileName => $count) {
+                        echo "<option value=\"$tileName\">$tileName</option>";
                     }
                 ?>
             </select>
             <select name="toPosition">
                 <?php
+                //todo dropdown bug fix
                     // deze to wordt bovenaan deze file geinstantieerd
                     foreach ($possiblePlayPositions as $position) {
                         echo "<option value=\"$position\">$position</option>";

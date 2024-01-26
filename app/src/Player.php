@@ -30,7 +30,11 @@ class Player
 
     public function removePieceFromHand($piece): void
     {
-        $this->hand[$piece]--;
+        if ($this->getHand()[$piece] == 1) {
+            unset($this->hand[$piece]);
+        } else {
+            $this->hand[$piece]--;
+        }
     }
 
 }
