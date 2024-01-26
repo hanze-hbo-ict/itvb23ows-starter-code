@@ -70,7 +70,14 @@ class Board {
             $q = $b[1] + $pq[1];
             if ($this->isNeighbour($from, $p.",".$q)) $common[] = $p.",".$q;
         }
-        if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) return false;
+        if (
+            (!isset($board[$common[0]]) || !$board[$common[0]]) &&
+            (!isset($board[$common[1]]) || !$board[$common[1]]) &&
+            (!isset($board[$from]) || !$board[$from]) &&
+            (!isset($board[$to]) || !$board[$to])
+        ) {
+            return false;
+        }
         return min($this->len($board[$common[0]]), $this->len($board[$common[1]])) <= max($this->len($board[$from]), $this->len($board[$to]));
     }
 
