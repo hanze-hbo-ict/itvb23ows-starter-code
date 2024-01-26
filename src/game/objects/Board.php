@@ -41,9 +41,9 @@ class Board {
         return $to;
     }
 
-    public function hasNeighbour($to): bool
+    public function hasNeighbour($to, $board): bool
     {
-        foreach (array_keys($this->board) as $b) {
+        foreach (array_keys($board) as $b) {
             if ($this->isNeighbour($to, $b)) return true;
         }
         return false;
@@ -59,10 +59,9 @@ class Board {
         return true;
     }
 
-    public function slide($from, $to): bool
+    public function slide($from, $to, $board): bool
     {
-        $board = $this->board;
-        if (!$this->hasNeighbour($to)) return false;
+        if (!$this->hasNeighbour($to, $board)) return false;
         if (!$this->isNeighbour($from, $to)) return false;
         $b = explode(',', $to);
         $common = [];
@@ -71,7 +70,14 @@ class Board {
             $q = $b[1] + $pq[1];
             if ($this->isNeighbour($from, $p.",".$q)) $common[] = $p.",".$q;
         }
-        if (!$board[$common[0]] && !$board[$common[1]] && !$board[$from] && !$board[$to]) return false;
+        if (
+            (!isset($board[$common[0]]) || !$board[$common[0]]) &&
+            (!isset($board[$common[1]]) || !$board[$common[1]]) &&
+            (!isset($board[$from]) || !$board[$from]) &&
+            (!isset($board[$to]) || !$board[$to])
+        ) {
+            return false;
+        }
         return min($this->len($board[$common[0]]), $this->len($board[$common[1]])) <= max($this->len($board[$from]), $this->len($board[$to]));
     }
 

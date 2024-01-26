@@ -33,7 +33,7 @@ class PlayController
             $_SESSION['error'] = "Player does not have tile";
         } elseif (isset($thisBoard[$this->to])) {
             $_SESSION['error'] = 'Board position is not empty';
-        } elseif (count($thisBoard) && !$this->board->hasNeighBour($this->to)) {
+        } elseif (count($thisBoard) && !$this->board->hasNeighBour($this->to, $thisBoard)) {
             $_SESSION['error'] = "Board position has no neighbour";
         } elseif (array_sum($this->hand) < 11 && !$this->board->neighboursAreSameColor($this->player, $this->to)) {
             $_SESSION['error'] = "Board position has opposing neighbour";

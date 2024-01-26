@@ -36,28 +36,16 @@ class MoveController
             $_SESSION['error'] = "Tile is not owned by player";
         } elseif ($this->hand['Q']) {
             $_SESSION['error'] = "Queen bee is not played";
-        } else {
-            $tile = array_pop($thisBoard[$this->from]);
-
-            if (!$this->board->hasNeighBour($this->to)) {
-                $_SESSION['error'] = "Move would split hive";
-            } else {
-                $all = array_keys($thisBoard);
-                $queue = [array_shift($all)];
-
-                while ($queue) {
-                    $next = explode(',', array_shift($queue));
-                    foreach ($this->board->getOffset() as $pq) {
-                        list($p, $q) = $pq;
-                        $p += $next[0];
-                        $q += $next[1];
-                        if (in_array("$p,$q", $all)) {
-                            $queue[] = "$p,$q";
-                            $all = array_diff($all, ["$p,$q"]);
-                        }
-                    }
-                }
-
+        } elseif (!$this->board->hasNeighBour($this->to, $thisBoard)) {
+            $_SESSION['error'] = "Move would split hive";
+        }else {
+            if (count($thisBoard[$this->from]) > 1){
+                $tile = array_pop($thisBoard[$this->from]);}
+            else{
+                $tile = array_pop($thisBoard[$this->from]);
+                unset($thisBoard[$this->from]);
+            }
+            $all = $this->getSplitTiles($thisBoard);
                 if ($all) {
                     $_SESSION['error'] = "Move would split hive";
                 } else {
@@ -66,19 +54,20 @@ class MoveController
                     } elseif (isset($thisBoard[$this->to]) && $tile[1] != "B") {
                         $_SESSION['error'] = 'Tile not empty';
                     } elseif ($tile[1] == "Q" || $tile[1] == "B") {
-                        if (!$this->board->slide($this->from, $this->to)) {
+                        if (!$this->board->slide($this->from, $this->to, $this->board->getBoard())) {
                             $_SESSION['error'] = 'Tile must slide';
                         }
                     }
                 }
-            }
 
+            // zet de from terug in je bord
             if (isset($_SESSION['error'])) {
                 if (isset($thisBoard[$this->from])) {
                     array_push($thisBoard[$this->from], $tile);
                 } else {
                     $thisBoard[$this->from] = [$tile];
                 }
+            // move from to to als er geen fouten zijn
             } else {
                 if (isset($thisBoard[$this->to])) {
                     array_push($thisBoard[$this->to], $tile);
@@ -87,13 +76,37 @@ class MoveController
                 }
 
                 $_SESSION['player'] = 1 - $_SESSION['player'];
-                unset($thisBoard[$this->from]);
                 $lastMove = $this->database->move($_SESSION['game_id'], $this->from, $this->to, $_SESSION['last_move']);
                 $_SESSION['last_move'] = $lastMove;
             }
         }
 
         $_SESSION['board'] = $thisBoard;
+    }
+
+    private function getSplitTiles($board): array
+    {
+        // checken of hive gesplitst is
+        $all = array_keys($board);
+        $queue = [array_shift($all)];
+
+        while ($queue) {
+            $next = explode(',', array_shift($queue));
+            foreach ($this->board->getOffset() as $pq) {
+                list($p, $q) = $pq;
+                $p += $next[0];
+                $q += $next[1];
+
+                $position = $p . "," . $q;
+
+                if (in_array($position, $all)) {
+                    $queue[] = $position;
+                    $all = array_diff($all, [$position]);
+                }
+            }
+        }
+
+        return $all;
     }
 }
 
