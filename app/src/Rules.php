@@ -35,7 +35,8 @@ class Rules
                 throw new RulesException("Player does not have tile in hand");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return false;
     }
@@ -47,7 +48,8 @@ class Rules
                 throw new RulesException("Board position is not empty");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -59,7 +61,8 @@ class Rules
                 throw new RulesException("Board position has no neighbour");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -71,7 +74,8 @@ class Rules
                 throw new RulesException("Board position has opposing neighbour");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -83,7 +87,8 @@ class Rules
                 throw new RulesException("Must play queen bee before turn four");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -102,7 +107,8 @@ class Rules
                 throw new RulesException("Board position is empty");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -114,7 +120,8 @@ class Rules
                 throw new RulesException("Tile is not owned by player");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -126,7 +133,8 @@ class Rules
                 throw new RulesException("Queen bee is not played");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -158,7 +166,8 @@ class Rules
                 }
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -181,7 +190,8 @@ class Rules
                 throw new RulesException("Tile must move");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -195,7 +205,8 @@ class Rules
                 throw new RulesException("Tile is not empty");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
@@ -207,7 +218,8 @@ class Rules
                 throw new RulesException("Tile is not able to slide");
             }
         } catch(RulesException $e) {
-            echo $e->getMessage();
+            echo $e->errorMessage();
+            return false;
         }
         return true;
     }
