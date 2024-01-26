@@ -1,10 +1,6 @@
 <?php
 namespace app;
 
-//use app\Database;
-//use app\Board;
-//use app\Player;
-
 class Game
 {
     private Board $board;
