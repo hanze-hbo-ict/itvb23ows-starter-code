@@ -82,6 +82,7 @@ class Game
             $this->prevMoveId = $this->databaseHandler->
                 addMove($this->gameId, $piece, $pos, $this->prevMoveId, $this->getSerializedState());
             $this->turnCounter++;
+            $this->gameStatus = $this->getGameStatus();
             $this->player = ($this->player + 1) % 2;
         }
     }
@@ -413,6 +414,7 @@ class Game
             $this->prevMoveId = $this->databaseHandler->
                 doMove($this->gameId, $fromPos, $toPos, $this->prevMoveId, $this->getSerializedState());
             $this->turnCounter++;
+            $this->gameStatus = $this->getGameStatus();
             $this->player = ($this->player + 1) % 2;
         }
     }
@@ -711,7 +713,62 @@ class Game
      *   - 3: Draw
      */
     public function getGameStatus(): int {
-        return -1;
+        $currentPlayer = $this->isGameOver($this->player);
+        $opponent = $this->isGameOver(($this->player + 1) % 2);
+
+        if ($currentPlayer && $opponent) {
+            return 3;
+        }
+
+        if ($currentPlayer) {
+            return 1;
+        }
+
+        if ($opponent) {
+            return 2;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Check if the game is over for the specified player.
+     *
+     * @param int $player The player to check for game over (0 or 1).
+     *
+     * @return bool True if the player's queen is blocked in, indicating game over; otherwise, false.
+     */
+    private function isGameOver(int $player): bool {
+        $queenPos = null;
+
+        foreach ($this->board as $pos => $items) {
+            foreach ($items as $item) {
+                if ($item[0] == $player && $item[1] == "Q") {
+                    $queenPos = $pos;
+                    break;
+                }
+            }
+
+            if ($queenPos == null) {
+                return false;
+            }
+        }
+
+        [$x1, $y1] = (int)explode(",", $queenPos);
+
+        $directions = $GLOBALS["OFFSETS"];
+
+        foreach ($directions as [$x2, $y2]) {
+            $p = $x1 + $x2;
+            $q = $y1 + $y2;
+
+            $newPos = $p.",".$q;
+
+            if (!array_key_exists($newPos, $this->board)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
