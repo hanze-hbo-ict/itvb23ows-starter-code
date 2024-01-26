@@ -219,6 +219,35 @@ class Game
     }
 
     /**
+     * Builds HTML code for a tile based on its position and attributes.
+     *
+     * @param string $pos    The position of the tile.
+     * @param array  $tiles  An array representing the layers of the tile.
+     * @param int    $minP   The minimum value for the x-coordinate.
+     * @param int    $minQ   The minimum value for the y-coordinate.
+     *
+     * @return string HTML code for the tile.
+     */
+    public function buildTile(string $pos, array $tiles, int $minP, int $minQ): string {
+        $pq = explode(',', $pos);
+        $tileCount = count($tiles);
+        $topTile = $tiles[$tileCount-1];
+        $player = $topTile[0];
+        $piece = $topTile[1];
+
+        $class = $tileCount > 1 ? "tile player$player stacked" : "tile player$player";
+        $left = (($pq[0] - $minP) * 4 + ($pq[1] - $minQ) * 2)."em;";
+        $top = (($pq[1] - $minQ) * 4)."em;";
+
+        return "<div class='$class' style='left: $left top: $top'>
+                    $pos
+                    <span>
+                        $piece
+                    </span>
+                </div>";
+    }
+
+    /**
      * Retrieves an array of available pieces for the current player from their hand.
      *
      * @return array An array containing the keys of available pieces (pieces with a count greater than 0).
