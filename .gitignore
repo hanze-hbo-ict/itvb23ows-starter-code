@@ -1,3 +1,4 @@
 todo.txt
 command.txt
 app/vendor
+.phpunit.result.cache
