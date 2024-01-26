@@ -71,6 +71,19 @@ class DatabaseHandler
     }
 
     /**
+     * Executes a pass action in the Hive game.
+     *
+     * @param int $gameId The ID of the game.
+     * @param int    $prevId The ID of the previous move.
+     * @param string $state The state of the game.
+     *
+     * @return int The ID of the newly inserted move.
+     */
+    public function doPass(int $gameId, int $prevId, string $state): int {
+        return $this->doAction($gameId, "pass", null, null, $prevId, $state);
+    }
+
+    /**
      * Adds a play move action in the Hive game.
      *
      * @param int    $gameId The ID of the game.

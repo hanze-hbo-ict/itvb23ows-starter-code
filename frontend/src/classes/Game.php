@@ -2,6 +2,8 @@
 
 namespace Classes;
 
+$GLOBALS['OFFSETS'] = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
+
 class Game
 {
     private DatabaseHandler $databaseHandler;
@@ -201,8 +203,16 @@ class Game
      *
      * @return void
      */
-    public function pass(): void {
+    private function pass(): void {
+        if (!$this->canPass()) {
+            $this->setError("You can not pass this turn.");
+            return;
+        }
 
+        $this->prevMoveId = $this->databaseHandler->
+            doPass($this->gameId, $this->prevMoveId, $this->getSerializedState());
+        $this->turnCounter++;
+        $this->player = ($this->player + 1) % 2;
     }
 
     /**
@@ -654,6 +664,61 @@ class Game
 
         if ($all) {
             return false;
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the current player can pass the turn in the Hive game.
+     *
+     * @return bool Returns true if the player can pass, false otherwise.
+     */
+    private function canPass(): bool {
+        if (count($this->getHand()) > 0 ||
+            count($this->getValidPlayMoves()) > 0) {
+            return false;
+        }
+
+        foreach ($this->board as $fromPos => $items) {
+            $player = $items[count($items)][0];
+
+            if ($player != $this->player) {
+                continue;
+            }
+
+            $piece = $items[count($items)][1];
+
+            foreach ($this->getBoundaries() as $toPos) {
+                switch ($piece) {
+                    case "Q":
+                        if ($this->canQueenMove($fromPos, $toPos)) {
+                            return false;
+                        }
+                        break;
+                    case "B":
+                        if ($this->canBeetleMove($fromPos, $toPos)) {
+                            return false;
+                        }
+                        break;
+                    case "G":
+                        if ($this->canGrasshopperMove($fromPos, $toPos)) {
+                            return false;
+                        }
+                        break;
+                    case "S":
+                        if ($this->canSpiderMove($fromPos, $toPos)) {
+                            return false;
+                        }
+                        break;
+                    case "A":
+                        if ($this->canAntMove($fromPos, $toPos)) {
+                            return false;
+                        }
+                        break;
+                    default:
+                        return false;
+                }
+            }
         }
         return true;
     }
