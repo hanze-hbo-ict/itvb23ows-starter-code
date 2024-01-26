@@ -86,9 +86,10 @@ class Game
     }
 
     public function restart(): void {
+        $startingHand = ["Q" => 1, "B" => 2, "S" => 2, "A" => 3, "G" => 3];
         $this->setBoard(new Board());
-        $this->setPlayerOne(new Player(0));
-        $this->setPlayerTwo(new Player(1));
+        $this->setPlayerOne(new Player(0, $startingHand));
+        $this->setPlayerTwo(new Player(1, $startingHand));
         $this->setCurrentPlayer($this->getPlayerOne());
         Database::addGameToDatabase($this);
         $this->setLastMoveId(Database::getLastMoveId());

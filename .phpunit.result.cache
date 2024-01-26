@@ -1,0 +1,1 @@
+{"version":1,"defects":{"PlayerTest::testGivenLastPieceOfTypeWhenRemovedFromHandThenKeyNotInHand":7},"times":{"PlayerTest::testTest":0.002,"PlayerTest::testGivenPieceOfTypeWhenMoreThanOneAndRemovedFromHandThenCountValueLowers":0,"PlayerTest::testGivenLastPieceOfTypeWhenRemovedFromHandThenKeyNotInHand":0.006}}
