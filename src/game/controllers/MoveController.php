@@ -124,7 +124,7 @@ class MoveController
         $toExploded = explode(',', $this->to);
 
 
-        $direction = $this->getDirection($fromExploded, $toExploded, $board);
+        $direction = $this->getDirection($fromExploded, $toExploded);
         if ($direction == null) {return false;}
 
         $p = $fromExploded[0] + $direction[0];
@@ -170,51 +170,6 @@ class MoveController
         }else {
             return null;
         }
-    }
-
-//    private function checkHiveConnected(): bool
-//    {
-//        $all = array_keys($this->board->getBoard());
-//        $queue = [array_shift($all)];
-//
-//        while ($queue) {
-//            $next = explode(',', array_shift($queue));
-//            foreach ($this->board->getOffset() as $pq) {
-//                list($p, $q) = $pq;
-//                $p += $next[0];
-//                $q += $next[1];
-//                if (in_array("$p,$q", $all)) {
-//                    $queue[] = "$p,$q";
-//                    $all = array_diff($all, ["$p,$q"]);
-//                }
-//            }
-//        }
-//
-//        return $all;
-//    }
-
-    private function checkHiveConnected($board): array
-    {
-        $all = array_keys($board);
-        $queue = [array_shift($all)];
-
-        while ($queue) {
-            $next = explode(',', array_shift($queue));
-            foreach ($this->board->getOffset() as $pq) {
-                list($p, $q) = $pq;
-                $p += $next[0];
-                $q += $next[1];
-
-                $position = $p . "," . $q;
-
-                if (in_array($position, $all)) {
-                    $queue[] = $position;
-                    $all = array_diff($all, [$position]);
-                }
-            }
-        }
-
-        return $all;
     }
 
 }

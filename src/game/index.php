@@ -59,7 +59,6 @@
 
         header('Location: ./index.php');
     }
-
     // Handle 'Move' button press
     if(array_key_exists('move', $_POST) && isset($_POST['from'])) {
         $from = $_POST['from'];
