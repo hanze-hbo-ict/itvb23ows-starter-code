@@ -15,6 +15,7 @@ $to = [];
 foreach ($GLOBALS['OFFSETS'] as $pq) {
     foreach (array_keys($board) as $pos) {
         $pq2 = explode(',', $pos);
+
         $to[] = ($pq[0] + $pq2[0]) . ',' . ($pq[1] + $pq2[1]);
     }
 }
@@ -142,14 +143,18 @@ if (!count($to)) {
         <select name="piece">
             <?php
             foreach ($hand[$player] as $tile => $ct) {
+                if($ct > 0){
                 echo "<option value=\"$tile\">$tile</option>";
+                }
             }
             ?>
         </select>
         <select name="to">
             <?php
             foreach ($to as $pos) {
+                if(AvailablePosition($board, $hand[$player], $player, $pos)){
                 echo "<option value=\"$pos\">$pos</option>";
+                }
             }
             ?>
         </select>
@@ -159,6 +164,11 @@ if (!count($to)) {
         <select name="from">
             <?php
             foreach (array_keys($board) as $pos) {
+                if($board[$pos][0][0] != $player){
+                    continue;
+                }
+              
+                
                 echo "<option value=\"$pos\">$pos</option>";
             }
             ?>
