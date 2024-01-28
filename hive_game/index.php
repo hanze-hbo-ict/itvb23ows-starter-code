@@ -1,7 +1,8 @@
 <?php
     session_start();
-
-    include_once 'util.php';
+    require_once 'vendor/autoload.php';
+    use HiveGame\Util;
+    use HiveGame\Database;
 
     if (!isset($_SESSION['board'])) {
         header('Location: restart.php');
@@ -169,7 +170,7 @@
         <strong><?php if (isset($_SESSION['error'])) { echo $_SESSION['error']; } unset($_SESSION['error']); ?></strong>
         <ol>
             <?php
-                $db = include_once 'database.php';
+                $db = new Database();
                 $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
                 $stmt->execute();
                 $result = $stmt->get_result();
