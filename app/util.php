@@ -61,3 +61,70 @@ function AvailablePosition($board, $hand, $player, $to){
     }
     return true;
 }
+
+function MoveToCurrentPos($from, $to):bool{
+    if($from == $to){
+        $_SESSION['error'] = 'Tile must move';
+       return true;
+    }
+    else{
+        return false;
+    }
+}
+
+function Grasshopper($from, $to, $board){
+    $jump = false;
+    //Regels voor springkhaan:
+        //1. Sprinkhaan sprint in een rechte lijn achter een andere steen in de richting van de tegenstander
+        //2. Sprinkhaan moet verplaatsen naar een plek waar hij niet staat
+        //3. Sprinkhaan moet over minimaal over 1 steen springen
+        //4. Sprinkhaan mag niet naar een bezet veld springen
+        //5. Sprinkhaan mag niet over lege velden springen, alle velden moeten bezet zijn.
+    
+        if(MoveToCurrentPos($from, $to)== false){
+        $fromPositions = explode(',', $from);
+        $toPositions = explode(',', $to);
+        
+        $xDifference = $toPositions[0] - $fromPositions[0];
+
+        $yDifference = $toPositions[1] - $fromPositions[1];
+        
+        if(!($fromPositions[0] == $toPositions[0] || $fromPositions[1] == $toPositions[1] || ($fromPositions[0]+$fromPositions[1]) == ($toPositions[0]+$fromPositions[1]))){
+            return false;
+        }
+
+        if($xDifference > 0){
+            $xPlacement = 1;    
+        }
+        elseif($xDifference < 0 ){
+            $xPlacement = -1;
+        }
+        else{
+            $xPlacement = 0;
+        }
+
+        if($yDifference > 0){
+            $yPlacement = 1;
+        }
+        elseif($yDifference < 0 ){
+            $yPlacement = -1;
+        }
+        else{
+            $yPlacement = 0;
+        }
+        $q = $fromPositions[1] + $yPlacement;
+        $p = $fromPositions[0] + $xPlacement;
+        
+        if(!isset($board["$p,$q"])){
+            return false;
+        }
+
+        while(isset($board["$p,$q"])){
+            $jump = true;
+            $p += $xPlacement;
+            $q += $yPlacement;
+        }
+        return $jump;
+    }
+    $_SESSION['error'] = 'Tile must move';
+}
