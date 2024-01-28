@@ -1,8 +1,9 @@
 <?php
 
 session_start();
+use HiveGame\Database;
 
-$db = include_once 'database.php';
+$db = new Database();
 $stmt = $db->prepare('SELECT * FROM moves WHERE id = '.$_SESSION['last_move']);
 $stmt->execute();
 $result = $stmt->get_result()->fetch_array();
