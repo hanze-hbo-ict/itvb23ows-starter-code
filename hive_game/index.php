@@ -166,7 +166,7 @@
         <form method="post" action="restart.php">
             <input type="submit" value="Restart">
         </form>
-        <strong><?php if (isset($_SESSION[error])) { echo($_SESSION[error]); } unset($_SESSION[error]); ?></strong>
+        <strong><?php if (isset($_SESSION['error'])) { echo $_SESSION['error']; } unset($_SESSION['error']); ?></strong>
         <ol>
             <?php
                 $db = include_once 'database.php';
