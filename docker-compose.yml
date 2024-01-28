@@ -9,19 +9,23 @@ services:
         depends_on:
             - database
         command: php -S 0.0.0.0:80
+        networks:
+            - network
 
     database:
         build:
             context: ./database
         ports:
-            - "3307:3306"
+            - "3307:3307"
         environment:
-            - MYSQL_ROOT_PASSWORD=passw
+            - MYSQL_ROOT_PASSWORD=password
             - MYSQL_DATABASE=hive
             - MYSQL_USER=hiveuser
             - MYSQL_PASSWORD=hivepassword
         volumes:
             - db-data:/var/lib/mysql
+        networks:
+            - network
 
     jenkins:
         image: jenkins/jenkins:lts
@@ -42,3 +46,6 @@ volumes:
     jenkins-data:
     sonarqube-data:
     db-data:
+
+networks:
+    network:
