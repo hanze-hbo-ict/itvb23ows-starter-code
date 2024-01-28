@@ -19,7 +19,7 @@ function isNeighbour($a, $b) {
 
 function hasNeighBour($a, $board) {
     foreach (array_keys($board) as $b) {
-        if (isNeighbour($a, $b)) { return true; } 
+        if (isNeighbour($a, $b)) { return true; }
     }
 }
 

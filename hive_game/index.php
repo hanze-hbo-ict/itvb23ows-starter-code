@@ -21,7 +21,7 @@
     $to = array_unique($to);
     if (!count($to)){
         $to[] = '0,0';
-    } 
+    }
 ?>
 <!DOCTYPE html>
 <html lang="EN" xml:lang="en">
@@ -124,7 +124,7 @@
             ?>
         </div>
         <div class="turn">
-            Turn: <?php if ($player == 0){ echo "White"; } else { echo "Black"; } ?> 
+            Turn: <?php if ($player == 0){ echo "White"; } else { echo "Black"; } ?>
         </div>
         <form method="post" action="play.php">
             <select name="piece">
@@ -183,4 +183,3 @@
         </form>
     </body>
 </html>
-
