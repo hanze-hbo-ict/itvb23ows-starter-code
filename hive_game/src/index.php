@@ -1,8 +1,12 @@
 <?php
     session_start();
+
     require_once 'vendor/autoload.php';
-    use HiveGame\Util;
-    use HiveGame\Database;
+
+    // use Joyce0398\HiveGame\Database;
+    // namespace Joyce0398\HiveGame; 
+    // use HiveGame\Util;
+    // use HiveGame\Database;
 
     if (!isset($_SESSION['board'])) {
         header('Location: restart.php');
