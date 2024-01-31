@@ -32,9 +32,9 @@ class Database {
 
     public static function move($gameId, $from, $to, $lastMove, $state) {
         $db = self::connect();
-        $stmt = $db->prepare('INSERT INTO moves (game_id, type, move_from, move_to, previous_id, state) VALUES (?, "move", ?, ?, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO moves (game_id, type, move_from, move_to, previous_id, state)
+        VALUES (?, "move", ?, ?, ?, ?)');
     
-        $type = "move";
         $stmt->bind_param('issis', $gameId, $from, $to, $lastMove, $state);
         $stmt->execute();
         return $db->insert_id;
@@ -42,9 +42,9 @@ class Database {
     
     public static function pass($gameId, $lastMove, $state) {
         $db = self::connect();
-        $stmt = $db->prepare('INSERT INTO moves (game_id, type, move_from, move_to, previous_id, state) VALUES (?, "pass", NULL, NULL, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO moves (game_id, type, move_from, move_to, previous_id, state) 
+        VALUES (?, "pass", NULL, NULL, ?, ?)');
     
-        $type = "pass";
         $stmt->bind_param('iis', $gameId, $lastMove, $state);
         $stmt->execute();
         return $db->insert_id;
@@ -52,15 +52,15 @@ class Database {
     
     public static function play($gameId, $piece, $to, $lastMove, $state) {
         $db = self::connect();
-        $stmt = $db->prepare('INSERT INTO moves (game_id, type, move_from, move_to, previous_id, state) VALUES (?, "play", ?, ?, ?, ?)');
+        $stmt = $db->prepare('INSERT INTO moves (game_id, type, move_from, move_to, previous_id, state) 
+        VALUES (?, "play", ?, ?, ?, ?)');
     
-        $type = "play";
         $stmt->bind_param('issis', $gameId, $piece, $to, $lastMove, $state);
         $stmt->execute();
         return $db->insert_id;
     }
 
-    public static function getMoves($gameId) {
+    public static function getMoves() {
         $db = Database::connect();
         $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
         $stmt->execute();

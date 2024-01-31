@@ -3,7 +3,7 @@ namespace Joyce0398\HiveGame;
 
 class BoardGame {
     private static $OFFSETS = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
-    public array $board; 
+    public array $board;
 
     public function __construct(array $board){
         $this->board = $board;
@@ -121,11 +121,13 @@ class BoardGame {
             }
         }
     
-        if (count($common) < 2 || !$this->board[$common[0]] && !$this->board[$common[1]] && !$this->board[$from] && !$this->board[$to]) {
+        if (count($common) < 2 || !$this->board[$common[0]] && !$this->board[$common[1]]
+        && !$this->board[$from] && !$this->board[$to]) {
             return false;
         }
     
-        return min(count($this->board[$common[0]]), count($this->board[$common[1]])) <= max(count($this->board[$from]), count($this->board[$to]));
+        return min(count($this->board[$common[0]]), count($this->board[$common[1]]))
+        <= max(count($this->board[$from]), count($this->board[$to]));
     }
     
 }

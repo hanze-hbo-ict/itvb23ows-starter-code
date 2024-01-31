@@ -11,7 +11,6 @@ $from = $_POST['from'];
 $to = $_POST['to'];
 
 $player = $_SESSION['player'];
-// $database = new Database();
 $board = new BoardGame($_SESSION['board']);
 $hand = $_SESSION['hand'][$player];
 unset($_SESSION['error']);
