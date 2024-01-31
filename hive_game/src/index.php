@@ -1,32 +1,38 @@
 <?php
+    
     session_start();
 
-    require_once 'vendor/autoload.php';
+    require_once __DIR__ . '/../vendor/autoload.php';
 
-    // use Joyce0398\HiveGame\Database;
-    // namespace Joyce0398\HiveGame; 
-    // use HiveGame\Util;
-    // use HiveGame\Database;
+    use Joyce0398\HiveGame\BoardGame;
+    use Joyce0398\HiveGame\Database;
 
     if (!isset($_SESSION['board'])) {
         header('Location: restart.php');
         exit(0);
     }
-    $board = $_SESSION['board'];
+    
+    $board = new BoardGame($_SESSION['board']);
     $player = $_SESSION['player'];
     $hand = $_SESSION['hand'];
-
+    
     $to = [];
-    foreach ($GLOBALS['OFFSETS'] as $pq) {
-        foreach (array_keys($board) as $pos) {
+    
+    foreach ($board->getOffsets() as $pq) {
+        foreach ($board->getKeys() as $pos) {
             $pq2 = explode(',', $pos);
-            $to[] = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);
+            $to[] = ($pq[0] + $pq2[0]) . ',' . ($pq[1] + $pq2[1]);
         }
     }
+    
     $to = array_unique($to);
-    if (!count($to)){
+    
+    if (empty($to)) {
         $to[] = '0,0';
     }
+    
+    echo 'board: ';
+    var_dump($board->board);
 ?>
 <!DOCTYPE html>
 <html lang="EN" xml:lang="en">
@@ -85,12 +91,12 @@
             <?php
                 $min_p = 1000;
                 $min_q = 1000;
-                foreach ($board as $pos => $tile) {
+                foreach ($board->getBoard() as $pos => $tile) {
                     $pq = explode(',', $pos);
                     if ($pq[0] < $min_p) { $min_p = $pq[0]; }
                     if ($pq[1] < $min_q) { $min_q = $pq[1]; }
                 }
-                foreach (array_filter($board) as $pos => $tile) {
+                foreach ($board->getNonEmptyTiles() as $pos => $tile) {
                     $pq = explode(',', $pos);
                     $pq[0];
                     $pq[1];
@@ -151,7 +157,7 @@
         <form method="post" action="move.php">
             <select name="from">
                 <?php
-                    foreach (array_keys($board) as $pos) {
+                    foreach ($board->getKeys() as $pos) {
                         echo "<option value=\"$pos\">$pos</option>";
                     }
                 ?>
@@ -174,17 +180,11 @@
         <strong><?php if (isset($_SESSION['error'])) { echo $_SESSION['error']; } unset($_SESSION['error']); ?></strong>
         <ol>
             <?php
-                $db = new Database();
-                $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
-                $stmt->execute();
-                $result = $stmt->get_result();
+                $result = Database::getMoves($_SESSION['game_id']);
                 while ($row = $result->fetch_array()) {
                     echo '<li>'.$row[2].' '.$row[3].' '.$row[4].'</li>';
                 }
             ?>
         </ol>
-        <form method="post" action="undo.php">
-            <input type="submit" value="Undo">
-        </form>
     </body>
 </html>
