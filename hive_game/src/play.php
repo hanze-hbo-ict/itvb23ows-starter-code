@@ -1,23 +1,26 @@
 <?php
 
 session_start();
-use HiveGame\Util;
-use HiveGame\Database;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Joyce0398\HiveGame\BoardGame;
+use Joyce0398\HiveGame\Database;
 
 $piece = $_POST['piece'];
 $to = $_POST['to'];
 
 $player = $_SESSION['player'];
-$board = $_SESSION['board'];
+$board = new BoardGame($_SESSION['board']);
 $hand = $_SESSION['hand'][$player];
 
 if (!$hand[$piece]) {
     $_SESSION['error'] = "Player does not have tile";
-} elseif (isset($board[$to])) {
+} elseif ($board->isOccupied($to)) {
     $_SESSION['error'] = 'Board position is not empty';
-} elseif (count($board) && !hasNeighBour($to, $board)) {
-    $_SESSION['error'] = "board position has no neighbour";
-} elseif (array_sum($hand) < 11 && !neighboursAreSameColor($player, $to, $board)) {
+} elseif (!$board->isEmpty() && !$board->hasNeighbour($to)) {
+    $_SESSION['error'] = "Board position has no neighbour";
+} elseif (array_sum($hand) < 11 && !$board->neighboursAreSameColor($player, $to)) {
     $_SESSION['error'] = "Board position has opposing neighbour";
 } elseif (array_sum($hand) <= 8 && $hand['Q']) {
     $_SESSION['error'] = 'Must play queen bee';
@@ -25,12 +28,13 @@ if (!$hand[$piece]) {
     $_SESSION['board'][$to] = [[$_SESSION['player'], $piece]];
     $_SESSION['hand'][$player][$piece]--;
     $_SESSION['player'] = 1 - $_SESSION['player'];
-    $db = new Database();
-    $stmt = $db->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state)
-    values (?, "play", ?, ?, ?, ?)');
-    $stmt->bind_param('issis', $_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], getState());
-    $stmt->execute();
-    $_SESSION['last_move'] = $db->insert_id;
+
+    $_SESSION['last_move'] = isset($_SESSION['last_move']) ? $_SESSION['last_move'] : null;
+
+    $insertId = Database::play($_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], BoardGame::getState());
+
+    $_SESSION['last_move'] = $insertId;
 }
 
 header('Location: index.php');
+exit();
