@@ -1,14 +1,20 @@
 <?php
 
 session_start();
-use HiveGame\Database;
 
-$db = new Database();
-$stmt = $db->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state)
-values (?, "pass", null, null, ?, ?)');
-$stmt->bind_param('iis', $_SESSION['game_id'], $_SESSION['last_move'], get_state());
-$stmt->execute();
-$_SESSION['last_move'] = $db->insert_id;
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Joyce0398\HiveGame\BoardGame;
+use Joyce0398\HiveGame\Database;
+
+if (!isset($_SESSION['last_move'])) {
+    $_SESSION['last_move'] = null;
+}
+
+$insertId = Database::pass($_SESSION['game_id'], $_SESSION['last_move'], BoardGame::getState());
+
+$_SESSION['last_move'] = $insertId;
 $_SESSION['player'] = 1 - $_SESSION['player'];
 
 header('Location: index.php');
+exit();
