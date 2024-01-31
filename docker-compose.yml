@@ -8,7 +8,7 @@ services:
             - "8080:80"
         depends_on:
             - database
-        command: php -S 0.0.0.0:80
+        command: php -S 0.0.0.0:80 -t src/
         networks:
             - network
 
@@ -16,7 +16,7 @@ services:
         build:
             context: ./database
         ports:
-            - "3307:3307"
+            - "3306:3306"
         environment:
             - MYSQL_ROOT_PASSWORD=password
             - MYSQL_DATABASE=hive
