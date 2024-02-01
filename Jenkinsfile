@@ -6,16 +6,21 @@ pipeline {
                 sh 'php --version'
             }
         }
-        stage('SonarQube Analysis') {
-            steps {
-                script {
-                    def scannerHome = tool 'SonarQube_Scanner'
-                    def scannerExecutable = "${scannerHome}/bin/sonar-scanner"
-                    withSonarQubeEnv('SonarQube') {
-                        sh "${scannerExecutable} -Dsonar.projectKey=ows -Dsonar.host.url=http://sonarqube:9000/"
-                    }
+        docker.image('sonarsource/sonar-scanner-cli').inside {
+                stage('Sonarqube') {
+                    sh 'sonar-scanner -Dsonar.projectKey=ows -Dsonar.host.url=http://sonarqube:9000/'
                 }
             }
-        }
+//         stage('SonarQube Analysis') {
+//             steps {
+//                 script {
+//                     def scannerHome = tool 'SonarQube_Scanner'
+//                     def scannerExecutable = "${scannerHome}/bin/sonar-scanner"
+//                     withSonarQubeEnv('SonarQube') {
+//                         sh "${scannerExecutable} -Dsonar.projectKey=ows -Dsonar.host.url=http://sonarqube:9000/"
+//                     }
+//                 }
+//             }
+//         }
     }
 }
