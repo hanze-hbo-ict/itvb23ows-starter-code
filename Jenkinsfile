@@ -9,8 +9,9 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 script {
-                    docker.image('sonarsource/sonar-scanner-cli').inside {
-                        sh 'sonar-scanner -Dsonar.projectKey=ows -Dsonar.host.url=http://sonarqube:9000/'
+                    docker {
+                        image 'sonarsource/sonar-scanner-cli'
+                        inside { sh 'sonar-scanner -Dsonar.projectKey=ows -Dsonar.host.url=http://sonarqube:9000/' }
                     }
                 }
             }
