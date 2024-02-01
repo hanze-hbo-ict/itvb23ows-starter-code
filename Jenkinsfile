@@ -6,11 +6,14 @@ pipeline {
                 sh 'php --version'
             }
         }
-        stage('SonarQube') {
+        stage('SonarQube Analysis') {
             steps {
-                script { scannerHome = tool 'SonarQube_Scanner' }
-                withSonarQubeEnv('SonarQube') {
-                    sh "${scannerHome}/bin/sonar-scanner -D sonar.projectKey=ows -D sonar.host.url=http://sonarqube:9000/"
+                script {
+                    def scannerHome = tool 'SonarQube_Scanner'
+                    def scannerExecutable = "${scannerHome}/bin/sonar-scanner"
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerExecutable} -Dsonar.projectKey=ows -Dsonar.host.url=http://sonarqube:9000/"
+                    }
                 }
             }
         }
