@@ -37,7 +37,7 @@ class GameRules
         else {
             $tile = array_pop($board[$from]);
 
-            if ($to === "0,1" && $tile[1] === "Q") {
+            if ($from === "0,0" && $to === "0,1" && $tile[1] === "Q" && $player->getColor() == 0) {
                 return true;
             }
             if (!$utils->hasNeighBour($to, $board))

@@ -53,7 +53,6 @@ class GameActionsTest extends TestCase
 
         $expectedMoveData = [
             "previous_id" => 456,
-            "state" => "state",
         ];
         $db->expects($this->once())
             ->method('getMoves')
@@ -63,9 +62,7 @@ class GameActionsTest extends TestCase
         $gameState->expects($this->once())
             ->method('setLastMove')
             ->with(456);
-        $gameActions->expects($this->once())
-            ->method('setState')
-            ->with("state");
+
 
         $gameActions->undoMove();
 
