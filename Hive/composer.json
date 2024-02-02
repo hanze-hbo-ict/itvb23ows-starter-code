@@ -1,0 +1,20 @@
+{
+  "name": "bastiaanmeijer/hive",
+  "description": "description",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "bastiaan",
+      "email": "b.meijer@st.hanze.nl"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "HiveGame\\": "src/"
+    }
+  },
+  "require": {
+    "ext-mysqli": "*"
+  }
+}
