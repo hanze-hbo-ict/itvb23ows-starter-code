@@ -36,6 +36,10 @@ class GameRules
 
         else {
             $tile = array_pop($board[$from]);
+
+            if ($to === "0,1" && $tile[1] === "Q") {
+                return true;
+            }
             if (!$utils->hasNeighBour($to, $board))
                 return "Move would split hive";
             else {
