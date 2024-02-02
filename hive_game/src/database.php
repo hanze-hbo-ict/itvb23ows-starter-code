@@ -60,9 +60,9 @@ class Database {
         return $db->insert_id;
     }
 
-    public static function getMoves() {
+    public static function getMoves($gameId) {
         $db = Database::connect();
-        $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '.$_SESSION['game_id']);
+        $stmt = $db->prepare('SELECT * FROM moves WHERE game_id = '. $gameId);
         $stmt->execute();
         return $stmt->get_result();
     }

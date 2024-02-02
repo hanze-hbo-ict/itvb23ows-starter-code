@@ -5,10 +5,10 @@ session_start();
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Joyce0398\HiveGame\Database;
+use Joyce0398\HiveGame\Hand;
 
 $_SESSION['board'] = [];
-$_SESSION['hand'] = [0 => ["Q" => 1, "B" => 2, "S" => 2, "A" => 3, "G" => 3],
- 1 => ["Q" => 1, "B" => 2, "S" => 2, "A" => 3, "G" => 3]];
+$_SESSION['hand'] = [Hand::$DEFAULT_HAND, Hand::$DEFAULT_HAND];
 $_SESSION['player'] = 0;
 
 $insertId = Database::restart();

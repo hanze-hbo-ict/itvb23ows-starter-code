@@ -6,35 +6,36 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Joyce0398\HiveGame\BoardGame;
 use Joyce0398\HiveGame\Database;
+use Joyce0398\HiveGame\GameLogic;
+use Joyce0398\HiveGame\Hand;
+use Joyce0398\HiveGame\Player;
+use Joyce0398\HiveGame\Utils;
 
 $piece = $_POST['piece'];
 $to = $_POST['to'];
 
-$player = $_SESSION['player'];
-$board = new BoardGame($_SESSION['board']);
-$hand = $_SESSION['hand'][$player];
+$gameId = $_SESSION['game_id'];
+$hands = $_SESSION['hand'];
+$lastMove = $_SESSION['last_move'] ?? null;
 
-if (!$hand[$piece]) {
-    $_SESSION['error'] = "Player does not have tile";
-} elseif ($board->isOccupied($to)) {
-    $_SESSION['error'] = 'Board position is not empty';
-} elseif (!$board->isEmpty() && !$board->hasNeighbour($to)) {
-    $_SESSION['error'] = "Board position has no neighbour";
-} elseif (array_sum($hand) < 11 && !$board->neighboursAreSameColor($player, $to)) {
-    $_SESSION['error'] = "Board position has opposing neighbour";
-} elseif (array_sum($hand) <= 8 && $hand['Q']) {
-    $_SESSION['error'] = 'Must play queen bee';
-} else {
-    $_SESSION['board'][$to] = [[$_SESSION['player'], $piece]];
-    $_SESSION['hand'][$player][$piece]--;
-    $_SESSION['player'] = 1 - $_SESSION['player'];
+[$board, $players] = Utils::createBoardAndPlayersFromSession($_SESSION);
+$currentPlayer = $players[$_SESSION['player']];
 
-    $_SESSION['last_move'] = isset($_SESSION['last_move']) ? $_SESSION['last_move'] : null;
+try {
+    $gameLogic = new GameLogic($board);
+    $gameLogic->checkPlay($currentPlayer, $piece, $to);
 
-    $insertId = Database::play($_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], BoardGame::getState());
+    $board->setTile($to, $piece, $currentPlayer->getId());
+    $currentPlayer->getHand()->removePiece($piece);
 
+    $insertId = Database::play($gameId, $piece, $to, $lastMove, BoardGame::getState());
+
+    $_SESSION['hand'] = [$players[0]->getHand()->toArray(), $players[1]->getHand()->toArray()];
     $_SESSION['last_move'] = $insertId;
+    $_SESSION['board'] = $board->getBoard();
+    $_SESSION['player'] = Utils::getOtherPlayerId($currentPlayer);
+} catch (Exception $e) {
+    $_SESSION['error'] = $e->getMessage();
 }
 
 header('Location: index.php');
-exit();

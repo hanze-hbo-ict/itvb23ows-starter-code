@@ -1,15 +1,21 @@
 <?php
+
 namespace Joyce0398\HiveGame;
 
-class BoardGame {
-    private static $OFFSETS = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
+use Exception;
+
+class BoardGame
+{
+    public static $OFFSETS = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
     public array $board;
 
-    public function __construct(array $board){
+    public function __construct(array $board = [])
+    {
         $this->board = $board;
     }
 
-    public static function getOffsets() {
+    public static function getOffsets()
+    {
         return self::$OFFSETS;
     }
 
@@ -18,24 +24,24 @@ class BoardGame {
         return $this->board;
     }
 
-    public static function getState() {
+    public static function getState()
+    {
+        // alleen SESSION hier en in play en index
         return serialize([$_SESSION['hand'], $_SESSION['board'], $_SESSION['player']]);
     }
 
-    public static function setState($state) {
+    public static function setState($state)
+    {
         list($_SESSION['hand'], $_SESSION['board'], $_SESSION['player']) = unserialize($state);
     }
 
-    public function isEmpty() {
+    public function isEmpty()
+    {
         return count($this->board) === 0;
     }
 
-    public function getMoves()
+    public function getKeys(): array
     {
-        return Database::getMoves($this->gameId);
-    }
-
-    public function getKeys() {
         return array_keys($this->board);
     }
 
@@ -44,22 +50,24 @@ class BoardGame {
         return array_pop($this->board[$position]);
     }
 
-    public function getNonEmptyTiles()
+    public function getOccupiedTiles()
     {
         return array_filter($this->board, function ($tileStack) {
             return !empty($tileStack);
         });
     }
 
-    public function isPlayerOccupying($from, $player) {
+    public function isPlayerOccupying($from, $player)
+    {
         if (isset($this->board[$from]) && count($this->board[$from]) > 0) {
-            return $this->board[$from][count($this->board[$from])-1][0] == $player;
+            return $this->board[$from][count($this->board[$from]) - 1][0] == $player;
         }
 
         return false;
     }
 
-    public function isNeighbour($a, $b) {
+    public function isNeighbour($a, $b)
+    {
         $a = explode(',', $a);
         $b = explode(',', $b);
 
@@ -74,7 +82,8 @@ class BoardGame {
         return false;
     }
 
-    public function hasNeighbour($a) {
+    public function hasNeighbour($a)
+    {
         foreach (array_keys($this->board) as $b) {
             if ($this->isNeighbour($a, $b)) {
                 return true;
@@ -83,11 +92,16 @@ class BoardGame {
         return false;
     }
 
-    public function neighboursAreSameColor($player, $a) {
+    public function neighboursAreSameColor($player, $a)
+    {
         foreach ($this->board as $b => $st) {
-            if (!$st) { continue; }
+            if (!$st) {
+                continue;
+            }
             $c = $st[count($st) - 1][0];
-            if ($c != $player && $this->isNeighbour($a, $b)) { return false; }
+            if ($c != $player && $this->isNeighbour($a, $b)) {
+                return false;
+            }
         }
         return true;
     }
@@ -97,7 +111,8 @@ class BoardGame {
         return isset($this->board[$position]);
     }
 
-    public function len($tile) {
+    public function len($tile)
+    {
         return $tile ? count($tile) : 0;
     }
 
@@ -106,11 +121,16 @@ class BoardGame {
         array_push($this->board[$position], array($player, $piece));
     }
 
-    public function slide($from, $to) {
+    public function setTile(string $position, string $piece, int $player)
+    {
+        $this->board[$position] = [[$player, $piece]];
+    }
+
+    public function slide(string $from, string $to): bool
+    {
         if (!$this->hasNeighbour($to) || !$this->isNeighbour($from, $to)) {
             return false;
         }
-    
         $b = explode(',', $to);
         $common = [];
         foreach (self::$OFFSETS as $pq) {
@@ -120,14 +140,10 @@ class BoardGame {
                 $common[] = $p . "," . $q;
             }
         }
-    
-        if (count($common) < 2 || !$this->board[$common[0]] && !$this->board[$common[1]]
-        && !$this->board[$from] && !$this->board[$to]) {
+
+        if (count($this->board) == 2 && !$this->isOccupied($common[0]) && !$this->isOccupied($common[0])) {
             return false;
         }
-    
-        return min(count($this->board[$common[0]]), count($this->board[$common[1]]))
-        <= max(count($this->board[$from]), count($this->board[$to]));
+        return true;
     }
-    
 }
