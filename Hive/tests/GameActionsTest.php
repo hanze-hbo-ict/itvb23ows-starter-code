@@ -67,4 +67,8 @@ class GameActionsTest extends TestCase
         $gameActions->undoMove();
 
     }
+
+    public function testPass() {
+
+    }
 }

@@ -82,4 +82,9 @@ class GameRules
     {
         return false;
     }
+
+    public function validSpiderMove(array $board, string $from, string $to): bool
+    {
+        return false;
+    }
 }

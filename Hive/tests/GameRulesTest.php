@@ -25,7 +25,7 @@ class GameRulesTest extends TestCase
 
     }
 
-    public function testGrasshopperMovement()
+    public function testGrasshopper()
     {
         $gameRules = new GameRules();
         $board = [
@@ -63,8 +63,33 @@ class GameRulesTest extends TestCase
 
         //d
         $this->assertTrue($gameRules->validSoldierAntMove($board, '0,0', '0,1'));
+        $this->assertTrue($gameRules->validSoldierAntMove($board, '0,0', '1,0'));
 
 
+    }
+
+    public function testSpider() {
+        $gameRules = new GameRules();
+        $board = [
+            '0,0' => [['player' => new Player(0), 'piece' => 'S']],
+            '1,0' => [['player' => new Player(1), 'piece' => 'B']],
+        ];
+
+        //a
+        $this->assertTrue($gameRules->validSpiderMove($board, '0,0', '3,0'));
+        $this->assertFalse($gameRules->validSpiderMove($board, '0,0', '4,0'));
+
+        //c
+        $this->assertFalse($gameRules->validSpiderMove($board, '0,0', '0,0'));
+
+        //d
+        $this->assertTrue($gameRules->validSoldierAntMove($board, '0,0', '0,1'));
+        $this->assertTrue($gameRules->validSoldierAntMove($board, '0,0', '1,0'));
+
+        // e
+        $this->assertFalse($gameRules->validSpiderMove($board, '0,0', '1,0'));
+        $this->assertFalse($gameRules->validSpiderMove($board, '0,0', '2,0'));
+        $this->assertFalse($gameRules->validSpiderMove($board, '0,0', '3,0'));
 
 
 
