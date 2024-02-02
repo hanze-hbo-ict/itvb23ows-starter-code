@@ -2,6 +2,7 @@
 
 namespace HiveGame;
 
+use Exception;
 use HiveGame\GameRules;
 
 class GameActions
@@ -80,11 +81,23 @@ class GameActions
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function undoMove(): void
     {
-        $result = $this->db->getMoves($this->game->getLastMove())->fetch_array();
-        $this->game->setLastMove($result[5]);
-        $this->setState($result[6]);
+        if ($this->game->getLastMove() == 0) {
+            throw new Exception("No previous move");
+        }
+
+        $lastMove = $this->db->getMoves($this->game->getLastMove());
+
+        if (isset($lastMove["state"])) {
+            $this->game->setLastMove($lastMove["previous_id"]);
+            $this->setState($lastMove["state"]);
+        }
+
+
     }
 
     public function getState(): string
