@@ -72,4 +72,14 @@ class GameRules
 
         return true;
     }
+
+    public function validSoldierAntMove(array $board, string $from, string $to): bool
+    {
+        return false;
+    }
+
+    public function validGrasshopperMove(array $board, string $from, string $to): bool
+    {
+        return false;
+    }
 }

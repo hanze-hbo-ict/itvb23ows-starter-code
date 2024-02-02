@@ -46,4 +46,28 @@ class GameRulesTest extends TestCase
 
     }
 
+    public function testSoldierAnt()
+    {
+        $gameRules = new GameRules();
+        $board = [
+            '0,0' => [['player' => new Player(0), 'piece' => 'SA']],
+            '1,0' => [['player' => new Player(1), 'piece' => 'B']],
+        ];
+
+        //a
+        $this->assertTrue($gameRules->validSoldierAntMove($board, '0,0', '0,1'));
+        $this->assertTrue($gameRules->validSoldierAntMove($board, '0,0', '0,2'));
+
+        //c
+        $this->assertFalse($gameRules->validSoldierAntMove($board, '0,0', '0,0'));
+
+        //d
+        $this->assertTrue($gameRules->validSoldierAntMove($board, '0,0', '0,1'));
+
+
+
+
+
+    }
+
 }
