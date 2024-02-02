@@ -100,6 +100,7 @@ class GameView
                     <?php if ($this->game->getGameId() !== null) echo '<input type="hidden" name="game" value="'.$this->game->getGameId().'" />' ?>
                     <select name="piece">
                         <?php
+
                         foreach ($this->game->getCurrentPlayer()->getHand() as $tile => $ct) {
                             echo "<option value=\"$tile\">$tile</option>";
                         }
