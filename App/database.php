@@ -11,6 +11,6 @@ function set_state($state) {
     $_SESSION['player'] = $c;
 }
 
-return new mysqli('database_game', 'root', 'hero', 'hive');
+return new mysqli('mysql_game_container', 'root', 'hero', 'hive');
 
 ?>
