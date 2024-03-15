@@ -1,0 +1,29 @@
+version: '3.0'
+services:
+  php_game:
+    build: App
+    depends_on:
+      - database_game
+    container_name: php_game_container
+    command: php -S 0.0.0.0:80
+    ports:
+      - "8000:80"
+
+  database_game:
+    build: DB
+    container_name: mysql_game_container
+    #image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'hive'
+      MYSQL_ROOT_USER: 'root'
+      MYSQL_ROOT_PASSWORD: 'hero'
+    ports:
+      - "3307:3306"
+    expose:
+      - '3306'
+    volumes:
+      - hive_db:/var/lib/mysql
+
+volumes:
+  hive_db:
