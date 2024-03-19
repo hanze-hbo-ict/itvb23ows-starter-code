@@ -1,15 +1,23 @@
 pipeline {
-    agent { docker { image 'php:8.2-apache'} }
-
+    agent {
+        docker { image 'php:8.2-apache' }
+    }
+    
     stages {
         stage('Build') {
-            steps { echo 'Building' }
+            steps {
+                echo 'Building'
+            }
         }
         stage('Test') {
-            steps { echo 'Testing' }
+            steps {
+                echo 'Testing'
+            }
         }
         stage('Deploy') {
-            steps { echo 'Deploying' }
+            steps {
+                echo 'Deploying'
+            }
         }
     }
 }
