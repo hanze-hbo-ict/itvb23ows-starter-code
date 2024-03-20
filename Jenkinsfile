@@ -8,7 +8,7 @@ pipeline {
             steps {
                 script { scannerHome = tool 'SonarQube Scanner' }
                 withSonarQubeEnv('Sonarqubetest') {
-                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=a-small-test"
+                    sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=hive-check"
                 }
             }
         }
