@@ -5,6 +5,11 @@ services:
     depends_on:
       - database_game
     container_name: php_game_container
+    environment:
+      MYSQL_HOSTNAME: ${MYSQL_HOSTNAME}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     command: php -S 0.0.0.0:80
     ports:
       - "8000:80"
@@ -15,9 +20,9 @@ services:
     #image: mysql:8.0
     #restart: always
     environment:
-      MYSQL_DATABASE: 'hive'
-      MYSQL_ROOT_USER: 'root'
-      MYSQL_ROOT_PASSWORD: 'hero'
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "3307:3306"
     expose:
