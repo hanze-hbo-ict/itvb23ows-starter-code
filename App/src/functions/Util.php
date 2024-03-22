@@ -3,7 +3,7 @@
 namespace functions;
 class Util
 {
-    private array $offsets = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
+    public array $offsets = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
 
     public function isNeighbour($a, $b): bool
     {

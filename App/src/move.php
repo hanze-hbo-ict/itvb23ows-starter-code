@@ -37,7 +37,7 @@ else {
         $queue = [array_shift($all)];
         while ($queue) {
             $next = explode(',', array_shift($queue));
-            foreach ($GLOBALS['OFFSETS'] as $pq) {
+            foreach ($util->offsets as $pq) {
                 list($p, $q) = $pq;
                 $p += $next[0];
                 $q += $next[1];
@@ -80,7 +80,8 @@ else {
         $_SESSION['player'] = 1 - $_SESSION['player'];
         $stmt = $db->database->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state)
                                 values (?, "move", ?, ?, ?, ?)');
-        $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'],  $db->get_State());
+        $state = $db->getState();
+        $stmt->bind_param('issis', $_SESSION['game_id'], $from, $to, $_SESSION['last_move'], $state);
         $stmt->execute();
         $_SESSION['last_move'] = $db->database->insert_id;
     }

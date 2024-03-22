@@ -1,12 +1,13 @@
 <?php
     session_start();
 
-    //use functions\util as Util;
+    use functions\Util as Util;
     use functions\Database as Database;
 
     require_once './vendor/autoload.php';
 
     $db = new Database();
+    $util = new Util();
 
     //temporary
     $GLOBALS['OFFSETS'] = [[0, 1], [0, -1], [1, 0], [-1, 0], [-1, 1], [1, -1]];
@@ -19,7 +20,7 @@
     $hand = $_SESSION['hand'];
 
     $to = [];
-    foreach ($GLOBALS['OFFSETS'] as $pq) {
+    foreach ($util->offsets as $pq) {
         foreach (array_keys($board) as $pos) {
             $pq2 = explode(',', $pos);
             $to[] = ($pq[0] + $pq2[0]).','.($pq[1] + $pq2[1]);

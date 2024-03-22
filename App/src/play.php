@@ -37,7 +37,8 @@ elseif (array_sum($hand) <= 8 && $hand['Q']) {
     $_SESSION['player'] = 1 - $_SESSION['player'];
     $stmt = $db->database->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state)
                             values (?, "play", ?, ?, ?, ?)');
-    $stmt->bind_param('issis', $_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], $db->getState());
+    $state = $db->getState();
+    $stmt->bind_param('issis', $_SESSION['game_id'], $piece, $to, $_SESSION['last_move'], $state);
     $stmt->execute();
     $_SESSION['last_move'] = $db->database->insert_id;
 }
