@@ -26,4 +26,16 @@ class Database {
         $_SESSION['board'] = $b;
         $_SESSION['player'] = $c;
     }
+
+    public function placeMove($game_id, $type, $from, $to, ) {
+        $state = $this->getState();
+        $stmt = $this->database->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state)
+                                values (?, ?, ?, ?, ?, ?)');
+        $stmt->bind_param('isssis', $game_id, $type,$from, $to, $_SESSION['last_move'], $state);
+        $stmt->execute();
+    }
+
+    public function newGame(): void {
+        $this->database->prepare('INSERT INTO games VALUES ()')->execute();
+    }
 }

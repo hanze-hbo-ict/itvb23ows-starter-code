@@ -1,7 +1,8 @@
 {
   "autoload": {
     "psr-4": {
-      "functions\\": "./functions"
+      "functions\\": "./functions",
+      "components\\": "./components"
     }
   },
   "require-dev": {
