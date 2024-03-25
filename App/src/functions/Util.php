@@ -9,32 +9,24 @@ class Util
     {
         $a = explode(',', $a);
         $b = explode(',', $b);
-        if (
-            $a[0] == $b[0] && abs($a[1] - $b[1]) == 1 ||
-            $a[1] == $b[1] && abs($a[0] - $b[0]) == 1 ||
-            $a[0] . $a[1] == $b[0] . $b[1]
+        if (!($a[0] == $b[0] && $a[1] == $b[1]) && (
+            ($a[0] == $b[0] && abs($a[1] - $b[1]) == 1) ||
+            ($a[1] == $b[1] && abs($a[0] - $b[0]) == 1) ||
+            ($a[0] + $a[1] == $b[0] + $b[1]))
         ) {
             return true;
         }
         return false;
     }
 
-    public function hasNeighBour($a, $board): array
+    public function hasNeighBour($a, $board): bool
     {
-        $neighbours = [];
-        $b = explode(',', $a);
-
-        foreach ($this->offsets as $pq) {
-            $p = $b[0] . $pq[0];
-            $q = $b[1] . $pq[1];
-
-            $pos = $p . "," . $q;
-
-            if (isset($board[$pos]) && $this->isNeighbour($a, $pos)) {
-                $neighbours[] = $pos;
+        foreach (array_keys($board) as $b) {
+            if ($this->isNeighbour($a, $b)) {
+                return true;
             }
         }
-        return $neighbours;
+        return false;
     }
 
     public function neighboursAreSameColor($player, $a, $board): bool

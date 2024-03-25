@@ -2,20 +2,23 @@
 
 namespace functions;
 
-use functions\Database as Database;
 use functions\Util as Util;
 
 class Game
 {
+    private Database $db;
+
+    public function __construct(Database $db) {
+        $this->db = $db;
+    }
+
     public function restart() {
         $_SESSION['board'] = [];
         $_SESSION['hand'] =
             [0 => ["Q" => 1, "B" => 2, "S" => 2, "A" => 3, "G" => 3],
                 1 => ["Q" => 1, "B" => 2, "S" => 2, "A" => 3, "G" => 3]];
         $_SESSION['player'] = 0;
-        $db = new Database();
-        $db->newGame();
-        $_SESSION['game_id'] = $db->database->insert_id;
+        $_SESSION['game_id'] = $this->db->newGame();
     }
 
     public function getPlayer() {
@@ -34,8 +37,10 @@ class Game
         return $_SESSION['game_id'];
     }
 
-    public function getSplitHive($board): array {
+    public function getSplitHive(): bool {
         $util = new Util();
+
+        $board = $this->getBoard();
 
         $all = array_keys($board);
         $queue = [array_shift($all)];
@@ -52,7 +57,10 @@ class Game
                 }
             }
         }
-        return $all;
+        if ($all) {
+            return true;
+        }
+        return false;
     }
 
     public function isValidPosition($piece, $to): bool
@@ -83,7 +91,8 @@ class Game
         return false;
     }
 
-    public function isValidMove($from, $to) {
+    public function isValidMove($from, $to): bool
+    {
         $player = $this->getPlayer();
         $board = $this->getBoard();
         $hand = $this->getHand();
@@ -105,17 +114,13 @@ class Game
         else {
             $tile = array_pop($board[$from]);
             unset($board[$from]);
-            //if (!$util->hasNeighBour($to, $board) || $this->getSplitHive()) {
-            if (!$util->hasNeighBour($to, $board)) {
-                $_SESSION['error'] = "Move would split hive 1";
-            }
-            elseif ($this->getSplitHive($board)) {
-                $_SESSION['error'] = "Move would split hive 2";
+            if (!$util->hasNeighBour($to, $board) || $this->getSplitHive()) {
+                $_SESSION['error'] = "Move would split hive";
             }
             elseif (isset($board[$to]) && $tile[1] != "B") {
                 $_SESSION['error'] = 'Tile not empty';
             }
-            elseif ($tile[1] == "Q" || $tile[1] == "B" && !self::slide($from, $to)) {
+            elseif (($tile[1] == "Q" || $tile[1] == "B") && !self::slide($from, $to)) {
                 $_SESSION['error'] = 'Tile must slide';
             } else {
                 return true;
@@ -124,36 +129,35 @@ class Game
         return false;
     }
 
-    public function placeStone($piece, $to) {
+    public function placeStone($piece, $to): void
+    {
         if ($this->isValidPosition($piece, $to)) {
             $_SESSION['board'][$to] = [[$_SESSION['player'], $piece]];
             $_SESSION['hand'][$this->getPlayer()][$piece]--;
             $_SESSION['player'] = 1 - $_SESSION['player'];
             $game_id = $this->getGameId();
-            $db = new Database();
-            $db->placeMove($game_id, "play", $piece, $to);
-            $_SESSION['last_move'] = $db->database->insert_id;
+            $_SESSION['last_move'] = $this->db->placeMove($game_id, "play", $piece, $to);
         }
     }
 
-    public function moveStone($from, $to) {
+    public function moveStone($from, $to): void
+    {
+        $board = $this->getBoard();
         if ($this->isValidMove($from, $to)) {
-            $board = $this->getBoard();
             $tile = array_pop($board[$from]);
-            unset($board[$from]);
-            $board[$to] = $tile;
+            $board[$to] = [$tile];
             $_SESSION['player'] = 1 - $_SESSION['player'];
             $game_id = $this->getGameId();
-            $db = new Database();
-            $db->placeMove($game_id, "play", $from, $to);
-            $_SESSION['last_move'] = $db->database->insert_id;
-            $_SESSION['board'] = $board;
+            $_SESSION['last_move'] = $this->db->placeMove($game_id, "move", $from, $to);
+            unset($board[$from]);
         }
+        $_SESSION['board'] = $board;
     }
 
     public function slide($from, $to): bool
     {
         $board = $this->getBoard();
+        unset($board[$from]);
         $util = new Util;
         if (!$util->hasNeighBour($to, $board)
             || !$util->isNeighbour($from, $to)) {
@@ -162,19 +166,19 @@ class Game
         $b = explode(',', $to);
         $common = [];
         foreach ($util->offsets as $pq) {
-            $p = $b[0] . $pq[0];
-            $q = $b[1] . $pq[1];
-            if ($util->isNeighbour($from, $p . "," . $q)) {
-                $common[] = $p . "," . $q;
+            $p = $b[0] + $pq[0];
+            $q = $b[1] + $pq[1];
+            if ($util->isNeighbour($from, $p.",".$q)) {
+                $common[] = $p.",".$q;
             }
         }
         if ((!isset($board[$common[0]]) || !$board[$common[0]])
             && (!isset($board[$common[1]]) || !$board[$common[1]])
-            && (!isset($board[$common[$from]]) || !$board[$from])
-            && (!isset($board[$common[$to]]) || !$board[$to])) {
+            && (!isset($board[$from]) || !$board[$from])
+            && (!isset($board[$to]) || !$board[$to])) {
                 return false;
             }
-            return min($util->len($board[$common[0]] ?? 0), $util->len($board[$common[1]]) ?? 0)
-            <= max($util->len($board[$from] ?? 0), $util->len($board[$to]) ?? 0);
+            return min($util->len($board[$common[0]] ?? 0), $util->len($board[$common[1]]?? 0))
+            <= max($util->len($board[$from] ?? 0), $util->len($board[$to] ?? 0));
     }
 }

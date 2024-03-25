@@ -27,15 +27,19 @@ class Database {
         $_SESSION['player'] = $c;
     }
 
-    public function placeMove($game_id, $type, $from, $to, ) {
+    public function placeMove($game_id, $type, $from, $to, ): int|string
+    {
         $state = $this->getState();
         $stmt = $this->database->prepare('insert into moves (game_id, type, move_from, move_to, previous_id, state)
                                 values (?, ?, ?, ?, ?, ?)');
         $stmt->bind_param('isssis', $game_id, $type,$from, $to, $_SESSION['last_move'], $state);
         $stmt->execute();
+        return $this->database->insert_id;
     }
 
-    public function newGame(): void {
+    public function newGame(): int
+    {
         $this->database->prepare('INSERT INTO games VALUES ()')->execute();
+        return $this->database->insert_id;
     }
 }

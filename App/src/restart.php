@@ -3,10 +3,12 @@
 session_start();
 
 use functions\Game as Game;
+use functions\Database as Database;
 
 require_once './vendor/autoload.php';
 
-$game = new Game();
+$db = new Database();
+$game = new Game($db);
 $game->restart();
 
 header('Location: index.php');
